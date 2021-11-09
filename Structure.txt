@@ -1,0 +1,42 @@
+
+
+commands
+help
+
+uploadschedule
+deleteschedule
+listschedules
+weekschedule
+dayschedule
+scanschedule
+task(first message in the morning, view classes)
+message log
+logs channel
+fetchinvite
+ping vc members
+votepin feature
+roomfeature
+add/change guild prefix
+blacklist / whitelist with recordings link  / leaderboard for faculty
+prefix change/add
+
+fetchintro
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{'server_bans': [], 'server_warns': [], 'total_deleted_msgs': 815, 'del_chn': 888675021998936144, 'logs_chn': 897002176491159602, 'admin_ver': 888675204920930325, 'guild': 865211274567483434, 'scheduledata': , 'gifs': {'vibe': ['https://tenor.com/view/jig-dance-vibe-gif-7752193', 'YaduK'], 'shy': ['https://tenor.com/view/konosuba-darkness-bds-hmm-shy-gif-14064144', 'aro'], 'pain': ['https://tenor.com/view/pain-naruto-anime-anonymouskun-u-dont-know-me-gif-21604973', 'DarkDragon'], 'vibecat': ['https://tenor.com/byics.gif', 'Yara'], 'rekt': ['https://tenor.com/bxreD.gif', 'Yara'], 'ditto': ['https://tenor.com/view/ditto-dance-gif-9953498', '0b51d14n'], 'ditto_dancing': ['https://tenor.com/view/ditto-dance-gif-9953498', 'cypher'], 'nice': ['https://tenor.com/view/yes-nice-nod-thumbs-up-gif-12292330', 'cypher'], 'hacker': ['https://tenor.com/view/fortnite-banana-kali-kali-linux-linux-computer-gif-20207141', 'n00dles'], 'catwich': ['https://tenor.com/view/cat-catbread-cute-sleepy-gif-23326294', '0b51d14n'], 'rikka': ['https://tenor.com/view/rikka-rolling-hand-gif-5040472', 'aro'], 'clapp': ['https://tenor.com/view/the-wolf-of-wall-street-clap-clapping-clapping-hands-leonardo-dicaprio-gif-22829304', 'aro']}, 'countmein': {'valo': [[608276451074113539], 744526711047192656, '09/30/2021, 17:11'], 'kartusamaze': [[608276451074113539], 608276451074113539, '10/07/2021, 21:45'], 'vpropelbrainstorming': [[608276451074113539, 612527741501177857, 892320916665679892], 608276451074113539, '10/07/2021, 21:55']}, 'staffchat': {893096452266545203: 893102317816131644, 893105747741777941: 893105752649117697, 893106960214401065: 893106966350692423, 892383663604527144: 893111202589327400, 893354449815371818: 893354480895139840, 893362600350461962: 893362623284936735, 893414649343660093: 893414659502252054, 895947588132565002: 895947595908788255}, 'staffchatdmstats': {893096452266545203: 'closed', 893105747741777941: 'closed', 893106960214401065: 'closed', 892383663604527144: 'closed', 893354449815371818: 'closed', 893362600350461962: 'closed', 893414649343660093: 'closed', 895947588132565002: 'closed'}}
