@@ -44,7 +44,7 @@ def format_timetable_row(lis: list, client_id: int, semester_list: int):
     ]
 
 
-class setup_commands(commands.Cog):
+class SetupCommands(commands.Cog):
 
     # Initialization
     def __init__(self, client) -> None:
@@ -328,4 +328,4 @@ class setup_commands(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(setup_commands(bot))
+    bot.add_cog(SetupCommands(bot))
