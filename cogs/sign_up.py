@@ -175,13 +175,13 @@ class setup_commands(commands.Cog):
         emb = discord.Embed(
             title="Select your degree", colour=discord.Colour.from_rgb(207, 68, 119)
         )
-        emb.add_field(name=f"Branch", value=f"{branch}\n")
+        emb.add_field(name="Branch", value=f"{branch}\n")
         await interaction.respond(
             embed=emb, components=selects_for_course.select_options["Degree"], type=7
         )
         interaction = await self.client.wait_for("select_option")
         degree = interaction.values[0]
-        emb.add_field(name=f"Pursuing Degree", value=f"{degree}\n")
+        emb.add_field(name="Pursuing Degree", value=f"{degree}\n")
 
         if stream_components := selects_for_course.select_options[branch]["stream"][
             degree
@@ -190,7 +190,7 @@ class setup_commands(commands.Cog):
             await interaction.respond(embed=emb, components=stream_components, type=7)
             interaction = await self.client.wait_for("select_option")
             stream = interaction.values[0]
-            emb.add_field(name=f"Stream", value=f"{stream}\n")
+            emb.add_field(name="Stream", value=f"{stream}\n")
         else:
             stream = degree
         emb.title = "Select your Course"
@@ -203,7 +203,7 @@ class setup_commands(commands.Cog):
         )
         interaction = await self.client.wait_for("select_option")
         course = interaction.values[0].replace(" spc.", " specialisation")
-        emb.add_field(name=f"Course Name", value=f"{course}\n")
+        emb.add_field(name="Course Name", value=f"{course}\n")
         emb.title = "Course Details"
         await interaction.respond(embed=emb, components=[], type=7)
         data["CourseName"] = course

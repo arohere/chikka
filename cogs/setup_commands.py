@@ -32,10 +32,10 @@ class SetupCommands(commands.Cog):
             "deleted-messages", category=kartus_category
         )
         self.cursor.execute(
-            f"""INSERT INTO guilds_info(guild_id,logs_channel_id,deleted_messages_channel_id) values( 
-            '{ctx.guild.id}', 
-            '{kartus_logs.id}', 
-            '{kartus_deleted_messages.id}'
+            f"""INSERT INTO guilds_info(guild_id,logs_channel_id,deleted_messages_channel_id) values(
+             '{ctx.guild.id}',
+             '{kartus_logs.id}',
+             '{kartus_deleted_messages.id}'
         )"""
         )
         self.cursor.commit()
