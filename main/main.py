@@ -6,7 +6,13 @@ import sqlite3
 import discord_components
 from initdb import create_database
 import asyncio
-from discord_components import DiscordComponents, Button, ButtonStyle, Select, SelectOption
+from discord_components import (
+    DiscordComponents,
+    Button,
+    ButtonStyle,
+    Select,
+    SelectOption,
+)
 
 
 seperator = "` `"
@@ -14,8 +20,7 @@ seperator = "` `"
 intents = discord.Intents.all()
 
 
-class client_withdb(commands.Bot):
-
+class ClientWithDb(commands.Bot):
     def __init__(self, intents, database="Storage.db"):
 
         if database in os.listdir():
@@ -29,7 +34,8 @@ class client_withdb(commands.Bot):
     def get_prefix_from_db(self, client, message: discord.Message):
         if not isinstance(message.channel, discord.channel.DMChannel):
             prefixes = self.cursor.execute(
-                f"SELECT prefix FROM guilds_info WHERE guild_id = {message.guild.id}").fetchall()
+                f"SELECT prefix FROM guilds_info WHERE guild_id = {message.guild.id}"
+            ).fetchall()
             if prefixes:
                 # ? sort while adding to database
                 return sorted(prefixes[0][0].split(seperator), reverse=True)
@@ -38,13 +44,19 @@ class client_withdb(commands.Bot):
         else:
             return "ka!"
 
-    async def add_reactions_and_wait(self, ctx: commands.Context, temp_msg: discord.Message, timeout=30):
+    async def add_reactions_and_wait(
+        self, ctx: commands.Context, temp_msg: discord.Message, timeout=30
+    ):
         await temp_msg.add_reaction(tick := "☑️")
         await temp_msg.add_reaction(x := "❌")
-        def check(
-            reaction, user): return user == ctx.message.author and reaction.emoji in (tick, x)
+
+        def check(reaction, user):
+            return user == ctx.message.author and reaction.emoji in (tick, x)
+
         try:
-            reaction, user = await self.wait_for('reaction_add', timeout=timeout, check=check)
+            reaction, user = await self.wait_for(
+                "reaction_add", timeout=timeout, check=check
+            )
             if reaction.emoji == x:
                 return False
             else:
@@ -53,7 +65,7 @@ class client_withdb(commands.Bot):
             return False
 
 
-client = client_withdb(intents=intents)
+client = ClientWithDb(intents=intents)
 DiscordComponents(client)
 
 
@@ -92,13 +104,12 @@ async def reloadext(ctx: commands.Context, extention: str):
 
 @client.command()
 async def ping(ctx):
-    await ctx.send('Pong! {0:.2f}ms'.format(client.latency*1000))
+    await ctx.send("Pong! {0:.2f}ms".format(client.latency * 1000))
 
 
 @client.check
 def Initialization_Check(ctx: commands.Context):
-    data = client.cursor.execute(
-        "SELECT guild_id FROM guilds_info;").fetchall()
+    data = client.cursor.execute("SELECT guild_id FROM guilds_info;").fetchall()
     if (str(ctx.guild.id),) not in data and ctx.command.name not in ("help", "setup"):
         ctx.ReasonForError = "Not Initialized"
         return False
@@ -114,6 +125,7 @@ async def on_command_error(ctx: commands.Context, err):
             raise err
     else:
         raise err
+
 
 for a in os.listdir("./cogs"):
     if a.endswith(".py"):

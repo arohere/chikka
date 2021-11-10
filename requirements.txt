@@ -1,0 +1,15 @@
+aiohttp
+async-timeout
+attrs
+beautifulsoup4
+bs4
+chardet
+discord-components
+discord-py-slash-command
+discord.py
+idna
+multidict
+Pillow
+soupsieve
+typing-extensions
+yarl
