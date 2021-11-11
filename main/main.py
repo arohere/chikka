@@ -3,7 +3,6 @@ import discord
 from discord.ext import commands
 import sqlite3
 
-import discord_components
 from initdb import create_database
 import asyncio
 from discord_components import (
@@ -15,7 +14,7 @@ from discord_components import (
 )
 
 
-seperator = "` `"
+SEPARATOR = "` `"
 
 intents = discord.Intents.all()
 
@@ -38,7 +37,7 @@ class ClientWithDb(commands.Bot):
             ).fetchall()
             if prefixes:
                 # ? sort while adding to database
-                return sorted(prefixes[0][0].split(seperator), reverse=True)
+                return sorted(prefixes[0][0].split(SEPARATOR), reverse=True)
             else:
                 return "ka!"
         else:
@@ -77,7 +76,7 @@ async def on_ready():
 
 @client.command()
 async def loadext(ctx: commands.Context, extention: str):
-    if extention + ".py" in os.listdir("./cogs"):
+    if extention + ".py" in os.listdir("./main/cogs"):
         client.load_extension(f"cogs.{extention}")
         await ctx.send("Extension successfully loaded.")
     else:
@@ -86,7 +85,7 @@ async def loadext(ctx: commands.Context, extention: str):
 
 @client.command()
 async def unloadext(ctx: commands.Context, extention: str):
-    if extention + ".py" in os.listdir("./cogs"):
+    if extention + ".py" in os.listdir("./main/cogs"):
         client.unload_extension(f"cogs.{extention}")
         await ctx.send("Extension successfully unloaded.")
     else:
@@ -95,7 +94,7 @@ async def unloadext(ctx: commands.Context, extention: str):
 
 @client.command()
 async def reloadext(ctx: commands.Context, extention: str):
-    if extention + ".py" in os.listdir("./cogs"):
+    if extention + ".py" in os.listdir("./main/cogs"):
         client.reload_extension(f"cogs.{extention}")
         await ctx.send("Extension successfully Reloaded.")
     else:
@@ -127,7 +126,7 @@ async def on_command_error(ctx: commands.Context, err):
         raise err
 
 
-for a in os.listdir("./cogs"):
+for a in os.listdir("./main/cogs"):
     if a.endswith(".py"):
         client.load_extension(f"cogs.{a[:-3]}")
         print("loaded " + a)

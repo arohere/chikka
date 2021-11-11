@@ -45,7 +45,8 @@ def create_database():
         school varchar,
         full_course_name varchar,
         full_name varchar,
-        reg_no varchar
+        reg_no varchar,
+        current_year varchar
     )
     """
     )
