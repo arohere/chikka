@@ -19,7 +19,7 @@ contains Select Options for Course selection during signup
 """
 
 
-thumbnail_url = "https://cdn.discordapp.com/attachments/872059879379050527/889749015938334730/Copy_of_VITC25.png"
+THUMBNAIL_URL = "https://cdn.discordapp.com/attachments/872059879379050527/889749015938334730/Copy_of_VITC25.png"
 
 
 def format_timetable_row(lis: list, client_id: int, semester_list: list):
@@ -94,7 +94,7 @@ class SetupCommands(commands.Cog):
             inline=False,
         )
 
-        embed.set_thumbnail(url=thumbnail_url)
+        embed.set_thumbnail(url=THUMBNAIL_URL)
 
         try:
             # Try sending dm, or request to enable "server members dm option"
@@ -254,7 +254,7 @@ class SetupCommands(commands.Cog):
             ),
             colour=discord.Colour.from_rgb(207, 68, 119),
         )
-        emb.set_thumbnail(url=thumbnail_url)
+        emb.set_thumbnail(url=THUMBNAIL_URL)
 
         components = [
             [
@@ -322,7 +322,7 @@ class SetupCommands(commands.Cog):
                         "🎈 Drag and Drop the Saved HTML Below. "
                     ),
                     colour=discord.Colour.from_rgb(207, 68, 119),
-                ).set_thumbnail(url=thumbnail_url)
+                ).set_thumbnail(url=THUMBNAIL_URL)
                 cur_components = [
                     [
                         Button(label="Go Back"),
@@ -347,7 +347,7 @@ class SetupCommands(commands.Cog):
                         ),
                         colour=discord.Colour.from_rgb(207, 68, 119),
                     )
-                    .set_thumbnail(url=thumbnail_url)
+                    .set_thumbnail(url=THUMBNAIL_URL)
                     .set_image(
                         url="https://media.giphy.com/media/MaDJCDpvjw3zIWnYdc/giphy-downsized-large.gif"
                     )
@@ -419,7 +419,7 @@ class SetupCommands(commands.Cog):
                             title="Course list uploaded successfully!",
                             description=str(row_data),
                             colour=discord.Colour.from_rgb(207, 68, 119),
-                        )
+                        ).set_thumbnail(url=THUMBNAIL_URL)
                     )
                     return
 

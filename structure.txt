@@ -1,0 +1,9 @@
+
+kartus/main/main.py 
+    ↳ imports kartus/main/initdb.py if Storage.db dosen't exist 
+    ↳ imports kartus/main/cogs/setup_commands.py as an extension/cog 
+    ↳ imports kartus/main/cogs/sign_up.py as an extension/cog
+        ↳ imports kartus/main/cogs/resources/selects_for_course.py for selects
+
+        
+

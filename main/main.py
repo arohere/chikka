@@ -37,6 +37,10 @@ class ClientWithDb(commands.Bot):
             ).fetchall()
             if prefixes:
                 # ? sort while adding to database
+                # yep, did this cuz i don't have a command to add prefix.
+                # thought i'll include it in setup_commands but moved on to sign_up
+                # and also any other better way to append to database rather than using separator?
+                # create new table?
                 return sorted(prefixes[0][0].split(SEPARATOR), reverse=True)
             else:
                 return "ka!"
@@ -76,7 +80,7 @@ async def on_ready():
 
 @client.command()
 async def loadext(ctx: commands.Context, extention: str):
-    if extention + ".py" in os.listdir("./main/cogs"):
+    if extention + ".py" in os.listdir("./main/cogs"):  # when running from home dir
         client.load_extension(f"cogs.{extention}")
         await ctx.send("Extension successfully loaded.")
     else:
@@ -85,7 +89,7 @@ async def loadext(ctx: commands.Context, extention: str):
 
 @client.command()
 async def unloadext(ctx: commands.Context, extention: str):
-    if extention + ".py" in os.listdir("./main/cogs"):
+    if extention + ".py" in os.listdir("./main/cogs"):  # when running from home dir
         client.unload_extension(f"cogs.{extention}")
         await ctx.send("Extension successfully unloaded.")
     else:
@@ -94,7 +98,7 @@ async def unloadext(ctx: commands.Context, extention: str):
 
 @client.command()
 async def reloadext(ctx: commands.Context, extention: str):
-    if extention + ".py" in os.listdir("./main/cogs"):
+    if extention + ".py" in os.listdir("./main/cogs"):  # when running from home dir
         client.reload_extension(f"cogs.{extention}")
         await ctx.send("Extension successfully Reloaded.")
     else:
@@ -106,7 +110,7 @@ async def ping(ctx):
     await ctx.send("Pong! {0:.2f}ms".format(client.latency * 1000))
 
 
-@client.check
+@client.check  # global check to see if kartus is setup in the guild
 def Initialization_Check(ctx: commands.Context):
     data = client.cursor.execute("SELECT guild_id FROM guilds_info;").fetchall()
     if (str(ctx.guild.id),) not in data and ctx.command.name not in ("help", "setup"):
@@ -118,15 +122,15 @@ def Initialization_Check(ctx: commands.Context):
 @client.event
 async def on_command_error(ctx: commands.Context, err):
     if type(err) == commands.errors.CheckFailure:
-        if ctx.ReasonForError == "Not Initialized":
+        if ctx.ReasonForError == "Not Initialized":  # catches error from check
             await ctx.send("Setup kartus using ka!setup to use this command.")
-        else:
+        else:  # any other check error then raise
             raise err
     else:
         raise err
 
 
-for a in os.listdir("./main/cogs"):
+for a in os.listdir("./main/cogs"):  # loads all ext in cogs folder
     if a.endswith(".py"):
         client.load_extension(f"cogs.{a[:-3]}")
         print("loaded " + a)
