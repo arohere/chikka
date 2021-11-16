@@ -76,6 +76,7 @@ DiscordComponents(client)
 async def on_ready():
     print("Ready")
     client.aro = client.get_user(608276451074113539)
+    client.DEV_SERVER_BUGS_CHANNEL = client.get_channel(908662707824238602)
 
 
 @client.command()
