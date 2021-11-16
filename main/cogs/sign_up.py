@@ -267,18 +267,6 @@ class SetupCommands(commands.Cog):
 
         msg = await dm.send(embed=emb, components=components)
         while True:
-            # try:
-            #     interaction: Interaction = await self.client.wait_for(
-            #         "button_click",
-            #         check=lambda inter: inter.custom_id in ("chrome", "linux"),
-            #         timeout=300,
-            #     )
-            # except asyncio.TimeoutError:
-            #     for a in components[0]:
-            #         a.set_disabled(True)
-            #     emb.title = "Signup Canceled"
-            #     await msg.edit(embed=emb, components=components)
-            #     return
 
             (
                 done,
@@ -386,8 +374,9 @@ class SetupCommands(commands.Cog):
                     )
                     tables = html_parser.find_all("table")
                     n = html_parser.find_all("h3", attrs={"class": "box-title"})
+                    print(n)
                     if (not n) or not (
-                        n[0]
+                        n[0].text
                         == "Time Table"  # contains <h3 class="box-title">Time Table</h3>
                         and tables
                     ):
@@ -413,7 +402,24 @@ class SetupCommands(commands.Cog):
                             row, ctx.author.id, semester_list=semester_list
                         )
                         row_data.append(row)
-
+                    self.cursor.execute(
+                        f"""INSERT INTO guild_client_info(client_id)
+                        values({ctx.author.id})
+                        """
+                    )
+                    guild_ids = self.cursor.execute(
+                        f"""SELECT guild_id FROM guilds_info"""
+                    ).fetchall()
+                    mutual_guild_ids = [a.id for a in ctx.author.mutual_guilds]
+                    print(mutual_guild_ids)
+                    guild_ids = [f"`{id[0]}` = 'joined'" for id in guild_ids if int(id[0]) in mutual_guild_ids]
+                    self.cursor.execute(
+                        f"""UPDATE guild_client_info
+                        SET {", ".join(guild_ids)}
+                        WHERE client_id = "{ctx.author.id}"
+                        """
+                    )
+                    self.cursor.commit()
                     await dm.send(
                         embed=discord.Embed(
                             title="Course list uploaded successfully!",

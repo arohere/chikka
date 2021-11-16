@@ -10,6 +10,21 @@ class SetupCommands(commands.Cog):
         self.client: commands.Bot = client
         self.cursor: sqlite3.Connection = client.cursor
 
+    @commands.Cog.listener()
+    async def on_member_join(self, member: discord.Member):
+        guild_ids = self.cursor.execute(
+            f"""SELECT guild_id FROM guilds_info"""
+        ).fetchall()
+        guild_ids = [a[0] for a in guild_ids]
+        if str(member.guild.id) in guild_ids:
+            self.cursor.execute(
+                f"""UPDATE guild_client_info
+            SET `{member.guild.id}` = "joined"
+            WHERE client_id = "{member.id}"
+            """
+            )
+            self.cursor.commit()
+
     # Setup Kartus
     @commands.command()
     async def setup(self, ctx: commands.Context):
@@ -44,6 +59,33 @@ class SetupCommands(commands.Cog):
                 description="Logs channel successfully created. This channel is currently only visible to the guild owner."
             )
         )
+        members = await ctx.guild.fetch_members(limit=None).flatten()
+        member_ids = [str(a.id) for a in members]
+        self.cursor.execute(
+            f"""ALTER TABLE guild_client_info
+            ADD `{ctx.guild.id}` varchar
+            """
+        )
+        kartus_subscribers = self.cursor.execute(
+            """SELECT client_id FROM guild_client_info"""
+        ).fetchall()
+
+        kartus_subscribers_from_guild = [
+            str(a[0]) for a in kartus_subscribers if a and a[0] in member_ids
+        ]
+        data_for_subs = (
+            f"('{kartus_subscribers_from_guild[0]}')"
+            if (len(kartus_subscribers_from_guild) == 1)
+            else str(tuple(kartus_subscribers_from_guild))
+        )
+        self.cursor.execute(
+            f"""UPDATE guild_client_info
+            SET `{ctx.guild.id}` = 'joined'
+            WHERE client_id in {data_for_subs}
+            """
+        )
+
+        self.cursor.commit()
 
     @commands.command()
     async def reset(self, ctx: commands.Context):

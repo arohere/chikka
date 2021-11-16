@@ -51,5 +51,12 @@ def create_database():
     """
     )
 
+    cursor.execute(
+        """CREATE TABLE guild_client_info(
+        client_id varchar UNIQUE
+        )
+        """
+    )
+
     cursor.commit()
     return cursor
