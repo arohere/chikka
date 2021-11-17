@@ -3,6 +3,7 @@ import discord
 from discord.ext import commands
 import sqlite3
 
+from discord_slash import SlashCommand
 from initdb import create_database
 import asyncio
 from discord_components import (
@@ -69,6 +70,24 @@ class ClientWithDb(commands.Bot):
 
 
 client = ClientWithDb(intents=intents)
+client.slash = SlashCommand(client, sync_commands=True)
+
+#################
+#   OVERRIDES   #
+#################
+
+temp = client.slash.context_menu
+
+
+def func(*args, **kwargs):
+    if "guild_ids" not in kwargs:
+        kwargs["guild_ids"] = [885046938171506688, 872034501478461472]
+    return temp(*args, **kwargs)
+
+
+client.slash.context_menu = func
+
+
 DiscordComponents(client)
 
 
