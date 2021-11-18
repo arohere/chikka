@@ -3,6 +3,7 @@ import discord
 from datetime import datetime
 from discord_slash.context import MenuContext
 from discord_slash.model import ContextMenuType
+import asyncio
 
 
 class VotePin(commands.Cog):
@@ -34,7 +35,32 @@ class VotePin(commands.Cog):
                         name=f"Attachment {i+1}", value=f"[Link]({j.url})", inline=False
                     )
 
-            await ctx.send(embed=embed)
+            msg = await ctx.send(embed=embed)
+
+            TIMEOUT = 10
+            REACTIONS = 3
+
+            await msg.add_reaction(tick := "☑️")
+            try:
+                await self.bot.wait_for("message_delete", timeout=TIMEOUT)
+                await msg.edit(
+                    embed=discord.Embed(
+                        title="Pin", description="Message deleted. Kill the author plz"
+                    )
+                )
+                await msg.clear_reactions()
+            except asyncio.TimeoutError:
+                cache_msg = discord.utils.get(bot.cached_messages, id=msg.id)
+                for reaction in cache_msg.reactions:
+                    if reaction.emoji == tick and reaction.count >= REACTIONS:
+                        await ctx.target_message.pin()
+                    else:
+                        await msg.edit(
+                            embed=discord.Embed(
+                                title="Pin",
+                                description=f"Message not pinned. It needs atleast {REACTIONS} reactions.",
+                            )
+                        )
 
         VotePin.vote_pin = vote_pin
 
