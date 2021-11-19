@@ -53,12 +53,6 @@ class SetupCommands(commands.Cog):
 
     @commands.command(name="signup")
     async def signup_with_schedule(self, ctx: commands.Context):
-        cur_sem = self.cursor.execute(  # Not fully built, ignore for now
-            "SELECT value FROM common_keys\
-            WHERE key = 'current_sem'"
-        ).fetchone()
-        if cur_sem:
-            cur_sem = cur_sem[0]
 
         data = self.cursor.execute(  # checks if user has already signed up
             f"SELECT COUNT(*) FROM client_info \
@@ -66,7 +60,13 @@ class SetupCommands(commands.Cog):
         ).fetchone()
 
         if data != (0,):
-            # already exists for current semester ask for re_signup?
+            await ctx.send(
+                embed=discord.Embed(
+                    title="Already signed up",
+                    description="You have already signed up before. If you have made a mistake during signup then please dm the bot and we will get back to you.",
+                    colour=discord.Colour.from_rgb(207, 68, 119),
+                )
+            )
             return
 
         dm: discord.TextChannel = await ctx.author.create_dm()
@@ -402,6 +402,17 @@ class SetupCommands(commands.Cog):
                             row, ctx.author.id, semester_list=semester_list
                         )
                         row_data.append(row)
+                    semester_id = row[8]
+                    semester_name = row[9]
+
+                    self.cursor.execute(
+                        f"""INSERT INTO current_semester
+                        values(
+                            {semester_id},
+                            {semester_name}
+                        )
+                        """
+                    )
                     self.cursor.execute(
                         f"""INSERT INTO guild_client_info(client_id)
                         values({ctx.author.id})
@@ -412,7 +423,11 @@ class SetupCommands(commands.Cog):
                     ).fetchall()
                     mutual_guild_ids = [a.id for a in ctx.author.mutual_guilds]
                     print(mutual_guild_ids)
-                    guild_ids = [f"`{id[0]}` = 'joined'" for id in guild_ids if int(id[0]) in mutual_guild_ids]
+                    guild_ids = [
+                        f"`{id[0]}` = 'joined'"
+                        for id in guild_ids
+                        if int(id[0]) in mutual_guild_ids
+                    ]
                     self.cursor.execute(
                         f"""UPDATE guild_client_info
                         SET {", ".join(guild_ids)}

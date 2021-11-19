@@ -31,7 +31,7 @@ def create_database():
         course_id varchar,
         slot varchar,
         venue varchar,
-        faulty_name varchar,
+        faculty_name varchar,
         faculty_school varchar,
         semester_id varchar,
         semester_name varchar
@@ -42,6 +42,8 @@ def create_database():
     cursor.execute(
         """CREATE TABLE client_info(
         client_id varchar UNIQUE,
+        campus varchar,
+        email varchar,
         school varchar,
         full_course_name varchar,
         full_name varchar,
@@ -49,6 +51,24 @@ def create_database():
         current_year varchar
     )
     """
+    )
+
+    cursor.execute(
+        """CREATE TABLE current_semester(
+            client_id varchar,
+            semester_id varchar,
+            semester_name varchar
+        )
+        """
+    )
+
+    cursor.execute(
+        """CREATE TABLE vote_notify(
+            client_id varchar,
+            last_voted varchar,
+            last_notified,
+        )
+        """
     )
 
     cursor.execute(
