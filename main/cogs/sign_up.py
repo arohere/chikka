@@ -9,6 +9,7 @@ from discord_components import client
 from discord_components.component import Button, ButtonStyle
 import asyncio
 from discord_components.interaction import Interaction
+from datetime import datetime
 
 # Relative Import
 from cogs.Resources import selects_for_course  # import w.r.t CWD
@@ -402,27 +403,28 @@ class SetupCommands(commands.Cog):
                             row, ctx.author.id, semester_list=semester_list
                         )
                         row_data.append(row)
-                    semester_id = row[8]
-                    semester_name = row[9]
+                    semester_id = row_data[0][8]
+                    semester_name = row_data[0][9]
 
                     self.cursor.execute(
                         f"""INSERT INTO current_semester
                         values(
-                            {semester_id},
-                            {semester_name}
+                            '{ctx.author.id}',
+                            '{semester_id}',
+                            '{semester_name}'
                         )
                         """
                     )
                     self.cursor.execute(
                         f"""INSERT INTO guild_client_info(client_id)
-                        values({ctx.author.id})
+                        values('{ctx.author.id}')
                         """
                     )
                     guild_ids = self.cursor.execute(
                         f"""SELECT guild_id FROM guilds_info"""
                     ).fetchall()
                     mutual_guild_ids = [a.id for a in ctx.author.mutual_guilds]
-                    print(mutual_guild_ids)
+                    # print(mutual_guild_ids)
                     guild_ids = [
                         f"`{id[0]}` = 'joined'"
                         for id in guild_ids
@@ -434,6 +436,24 @@ class SetupCommands(commands.Cog):
                         WHERE client_id = "{ctx.author.id}"
                         """
                     )
+
+                    faculty_list = set([a[6] for a in row_data if a[7] != "ACAD"])
+                    data_for_rate = [
+                        (a, ctx.author.id, semester_id, datetime.now())
+                        for a in faculty_list
+                    ]
+                    self.cursor.executemany(
+                        f"""INSERT INTO client_faculty_rate(
+                            faculty_name,
+                            client_id,
+                            semester_id,
+                            day_voted
+                        )
+                        VALUES(?,?,?,?)
+                        """,
+                        data_for_rate,
+                    )
+
                     self.cursor.commit()
                     await dm.send(
                         embed=discord.Embed(
@@ -442,6 +462,7 @@ class SetupCommands(commands.Cog):
                             colour=discord.Colour.from_rgb(207, 68, 119),
                         ).set_thumbnail(url=THUMBNAIL_URL)
                     )
+                    # invoke rate
                     return
 
 

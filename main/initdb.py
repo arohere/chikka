@@ -66,7 +66,7 @@ def create_database():
         """CREATE TABLE vote_notify(
             client_id varchar,
             last_voted varchar,
-            last_notified,
+            last_notified varchar
         )
         """
     )
@@ -78,5 +78,16 @@ def create_database():
         """
     )
 
+    cursor.execute(
+        """CREATE TABLE client_faculty_rate(
+        faculty_name varchar,
+        client_id varchar,
+        semester_id varchar,
+        rating int,
+        blacklisted varchar,
+        day_voted date
+        )
+        """
+    )
     cursor.commit()
     return cursor
