@@ -75,6 +75,12 @@ DiscordComponents(client)
 @client.event
 async def on_ready():
     print("Ready")
+    emote_guild = client.get_guild(885046938171506688)
+    client.emotes = {
+        "full_heart": discord.utils.get(emote_guild.emojis, id=911538231911276604),
+        "half_heart": discord.utils.get(emote_guild.emojis, id=911538231860953108),
+        "no_heart": discord.utils.get(emote_guild.emojis, id=911538231928057906),
+    }
     client.aro = client.get_user(608276451074113539)
     client.DEV_SERVER_BUGS_CHANNEL = client.get_channel(908662707824238602)
 
