@@ -1,5 +1,6 @@
 from PIL import Image
 from create_image import generate_label
+from functools import cache
 
 
 def fill_label(lst, bg_colors=None, font_colors=None, texts=None):
@@ -16,12 +17,20 @@ def fill_label(lst, bg_colors=None, font_colors=None, texts=None):
     for coords, bg, font, text in zip(lst, bg_colors, font_colors, texts):
         im.paste(generate_label(text, bg, font), coords)
     im.show()
+    return im
+
+
+@cache
+def get_coords():
+    rows, columns = 7, 12
+    start = 442, 407
+    lst = []
+    for i in range(rows):
+        lst.extend(
+            (start[0] + 281 * j, start[1] + int(130.6 * i)) for j in range(columns)
+        )
+    return lst
 
 
 if __name__ == "__main__":
-    fill_label(
-        [(442, 407), (722, 535)],
-        [(0, 255, 0), (0, 0, 50)],
-        [(0, 0, 0), (255, 255, 255)],
-        ["BCSE101T", "BCSE101L"],
-    )
+    fill_label(get_coords())
