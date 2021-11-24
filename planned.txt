@@ -34,7 +34,7 @@ Aro:
         i. to retrive current sem data, from current sem fetch current_semester and use to reference schedule_data
     4. add reloading commands permissions only for kartus devs
     5. Create Roles for each department, give verified role to signups and add checks to kartus such that only verified ppl can use commands
-
+    6. Make a copy of the HTML files
 
 
 
