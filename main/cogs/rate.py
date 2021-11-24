@@ -211,9 +211,14 @@ class ReportBug(commands.Cog):
                     break
                 after_rating_embed.description = selected
             after_rating_embed.description = (
-                "Blacklisted" if selected == "blacklist" else return_hearts(selected)
             )
-
+            kwargs_for_embeds[2] = {
+                "name": "Your Current Rating",
+                "value": "Blacklisted" if selected == "blacklist" else return_hearts(selected),
+                "inline": True,
+            }
+            for kwargs in kwargs_for_embeds:
+                after_rating_embed.add_field(**kwargs)
             embeds.append(after_rating_embed)
             if selection_options:
                 await interaction.respond(
