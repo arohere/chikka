@@ -31,13 +31,8 @@ class ReportBug(commands.Cog):
     # check for DM errors, try except
 
     @commands.command()
-    async def rate(
-        self,
-        ctx: commands.Context,
-        reg_redirect: bool = False,  # remove and pass through ctx
-        dm: discord.DMChannel = None,  # remove and pass through ctx
-    ):
-        dm = ctx.channel
+    async def rate(self, ctx: commands.Context):  # remove and pass through ctx
+
         current_semester = self.cursor.execute(
             f"""SELECT semester_id FROM current_semester
             WHERE client_id = '{ctx.author.id}'
@@ -94,8 +89,11 @@ class ReportBug(commands.Cog):
             colour=discord.Colour.from_rgb(207, 68, 119),
         )
         embeds = [emb]
-        if not dm:
-            await ctx.author.create_dm()
+        if "redirect_from_signup" in dir(ctx) and ctx.redirect_from_signup:
+            dm = ctx.dm
+        else:
+            ctx.redirect_from_signup = False
+            dm = await ctx.author.create_dm()
 
         try:
             msg = await dm.send(
@@ -104,6 +102,8 @@ class ReportBug(commands.Cog):
                     Select(placeholder="Select a faculty", options=selection_options)
                 ],
             )
+            if not ctx.redirect_from_signup:
+                await ctx.send("Check your DMs.")
         except discord.errors.Forbidden:
             """
             ask users to enable messages from server members option in settings
@@ -210,11 +210,12 @@ class ReportBug(commands.Cog):
                     selection_options.remove(a)
                     break
                 after_rating_embed.description = selected
-            after_rating_embed.description = (
-            )
+            after_rating_embed.description = ()
             kwargs_for_embeds[2] = {
                 "name": "Your Current Rating",
-                "value": "Blacklisted" if selected == "blacklist" else return_hearts(selected),
+                "value": "Blacklisted"
+                if selected == "blacklist"
+                else return_hearts(selected),
                 "inline": True,
             }
             for kwargs in kwargs_for_embeds:
