@@ -129,7 +129,7 @@ def Initialization_Check(ctx: commands.Context):
 @client.event
 async def on_command_error(ctx: commands.Context, err):
     if type(err) == commands.errors.CheckFailure:
-        if ctx.ReasonForError == "Not Initialized":  # catches error from check
+        if "ReasonForError" in dir(ctx) and ctx.ReasonForError == "Not Initialized":  # catches error from check
             await ctx.send("Setup kartus using ka!setup to use this command.")
         else:  # any other check error then raise
             raise err
