@@ -375,7 +375,6 @@ class SetupCommands(commands.Cog):
                     )
                     tables = html_parser.find_all("table")
                     n = html_parser.find_all("h3", attrs={"class": "box-title"})
-                    print(n)
                     if (not n) or not (
                         n[0].text
                         == "Time Table"  # contains <h3 class="box-title">Time Table</h3>
@@ -424,7 +423,6 @@ class SetupCommands(commands.Cog):
                         f"""SELECT guild_id FROM guilds_info"""
                     ).fetchall()
                     mutual_guild_ids = [a.id for a in ctx.author.mutual_guilds]
-                    # print(mutual_guild_ids)
                     guild_ids = [
                         f"`{id[0]}` = 'joined'"
                         for id in guild_ids
@@ -452,6 +450,14 @@ class SetupCommands(commands.Cog):
                         VALUES(?,?,?,?)
                         """,
                         data_for_rate,
+                    )
+                    self.cursor.execute(
+                        f"""INSERT INTO vote_notify(
+                            client_id
+                        ) values (
+                            {ctx.author.id}
+                        )
+                        """
                     )
 
                     self.cursor.commit()
