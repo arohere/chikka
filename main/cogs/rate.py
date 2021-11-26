@@ -33,7 +33,7 @@ class ReportBug(commands.Cog):
     # @tasks.loop(hours=168)
     @tasks.loop(seconds=20)
     async def check_ratings(self):
-        print("running loop")
+        # print("running loop")
         data = self.cursor.execute(
             """SELECT client_id FROM vote_notify
             WHERE (last_voted is not NULL and last_voted < ?) and (last_notified is NULL or last_notified < last_voted)
@@ -64,7 +64,7 @@ class ReportBug(commands.Cog):
         total_request_messages = []
         # end_time = datetime.now() - timedelta(hours=1)
         end_time = datetime.now() + timedelta(minutes=2)
-        print(end_time)
+        # print(end_time)
         # asyncio.create_task(self.reply_to_interactions(timedelta(hours=1)))
         asyncio.create_task(self.reply_to_interactions(timedelta(minutes=1)))
         for a in client_ids:
@@ -116,7 +116,7 @@ class ReportBug(commands.Cog):
         self.cursor.commit()
         if total_request_messages:
             total_seconds = (end_time - datetime.now()).total_seconds()
-            print(total_seconds)
+            # print(total_seconds)
             await asyncio.sleep(total_seconds)
             for msg in total_request_messages:
                 await msg.disable_components()
@@ -347,7 +347,7 @@ class ReportBug(commands.Cog):
                 selected = interaction.values[0]
             else:
                 selected = "blacklist"
-            print(faculty_name, " - ", selected)
+            # print(faculty_name, " - ", selected)
             rating_data[faculty_name] = selected
             # blacklist check and add l8r or now
 
@@ -377,7 +377,7 @@ class ReportBug(commands.Cog):
                     ],
                     type=7,
                 )
-        print(rating_data)
+        # print(rating_data)
         for a in rating_data:
             if rating_data[a] == "blacklist":
                 self.cursor.execute(
