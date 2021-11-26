@@ -1,5 +1,4 @@
 import asyncio
-from discord import client, colour, emoji
 from discord.ext import commands, tasks
 import discord
 from datetime import datetime, timedelta
@@ -31,14 +30,16 @@ class ReportBug(commands.Cog):
     # add to vote_notify, last_voted
     # check for DM errors, try except
 
-    @tasks.loop(hours=168)
+    # @tasks.loop(hours=168)
+    @tasks.loop(seconds=20)
     async def check_ratings(self):
         print("running loop")
         data = self.cursor.execute(
-            f"""SELECT client_id FROM vote_notify
-            WHERE last_voted < ? and (last_notified is NULL or last_notified < last_voted)
+            """SELECT client_id FROM vote_notify
+            WHERE (last_voted is not NULL and last_voted < ?) and (last_notified is NULL or last_notified < last_voted)
             """,
-            (datetime.now() - timedelta(days=31),),
+            # (datetime.now() - timedelta(days=31),),
+            (datetime.now() - timedelta(minutes=1),),
         ).fetchall()
         client_ids = [int(a[0]) for a in data]
         embed = discord.Embed(
@@ -61,50 +62,95 @@ class ReportBug(commands.Cog):
             ]
         ]
         total_request_messages = []
-        start_time = datetime.now()
-        asyncio.create_task(self.reply_to_interactions(timedelta(hours=1)))
+        # end_time = datetime.now() - timedelta(hours=1)
+        end_time = datetime.now() + timedelta(minutes=2)
+        print(end_time)
+        # asyncio.create_task(self.reply_to_interactions(timedelta(hours=1)))
+        asyncio.create_task(self.reply_to_interactions(timedelta(minutes=1)))
         for a in client_ids:
             user: discord.User = self.client.get_user(a)
             dm = await user.create_dm()
             request_message = await dm.send(embed=embed, components=components)
             total_request_messages.append(request_message)
+            self.cursor.execute(
+                f"""UPDATE vote_notify
+                SET notified = "no", last_notified = ?
+                WHERE client_id = '{a}'
+                """,
+                (datetime.now(),),
+            )
+        self.cursor.commit()
 
-        data = self.cursor.execute( # add already notified bool
-            f"""SELECT client_id, last_voted, last_notified FROM vote_notify
-            WHERE last_notified < ? and notified == "no"
+        embed = discord.Embed(
+            colour=discord.Colour.from_rgb(207, 68, 119),
+            title="Rate your faculties",
+            description=(
+                "This is the final notification to remind you to rate your faculties. Click on the button below to take the 2-minute survey. "
+                "**Failing to take the survey will restrict you from viewing faculty ratings and using Kartus features.**\n\n"
+                "These surveys help us to assess faculties, and the consolidated ratings of each faculty is made available to all the users. "
+                "This data enables the user to make an informed choice in selecting their faculties for the upcoming semester.\n\n"
+                "In case you have been restricted, use ka!rate to take the survey and regain access to Kartus."
+            ),
+        )
+
+        data = self.cursor.execute(  # add already notified bool
+            """SELECT client_id, last_voted, last_notified FROM vote_notify
+            WHERE (last_notified is not NULL and last_notified < ?) and notified == "no"
             """,
-            (datetime.now() - timedelta(days=14),),
+            # (datetime.now() - timedelta(days=14),),
+            (datetime.now() - timedelta(minutes=1),),
         ).fetchall()
-        client_ids = [int(a[0]) for a in data.fetchall()]
+        client_ids = [int(a[0]) for a in data]
+        for a in client_ids:
+            user: discord.User = self.client.get_user(a)
+            dm = await user.create_dm()
+            request_message = await dm.send(embed=embed, components=components)
+            total_request_messages.append(request_message)
+            self.cursor.execute(
+                f"""UPDATE vote_notify
+                SET notified = "yes", last_notified = ?
+                WHERE client_id = '{a}'
+                """,
+                (datetime.now(),),
+            )
+        self.cursor.commit()
+        if total_request_messages:
+            total_seconds = (end_time - datetime.now()).total_seconds()
+            print(total_seconds)
+            await asyncio.sleep(total_seconds)
+            for msg in total_request_messages:
+                await msg.disable_components()
 
     @check_ratings.before_loop
     async def before_rating(self):
-        now = datetime.now()
-        day = now.weekday()
-        day = 0 if day == 0 and now.hour < 13 else 8 - day
-        hours = 13 - now.hour
-        total_seconds = timedelta(days=day, hours=hours).total_seconds()
-        await asyncio.sleep(total_seconds)
+        await self.client.wait_until_ready()
 
-    async def reply_to_interactions(
-        self, timeout_delta: timedelta
-    ):
+    # @check_ratings.before_loop
+    # async def before_rating(self):
+    #     now = datetime.now()
+    #     day = now.weekday()
+    #     day = 0 if day == 0 and now.hour < 13 else 8 - day
+    #     hours = 13 - now.hour
+    #     total_seconds = timedelta(days=day, hours=hours).total_seconds()
+    #     await asyncio.sleep(total_seconds)
+
+    async def reply_to_interactions(self, timeout_delta: timedelta):
         endtime = datetime.now() + timeout_delta
         try:
             ongoing_ratings = []
             while True:
-                interaction : Interaction = await self.client.wait_for(
+                interaction: Interaction = await self.client.wait_for(
                     "button_click",
                     timeout=(endtime - datetime.now()).total_seconds(),
                     check=lambda i: i.custom_id == "DM_rate_request_button",
                 )
-                dm = await interaction.author.create_dm()
                 await interaction.disable_components()
-                task1 = asyncio.create_task(self.rate_it(
-                    author=interaction.author,
-                    channel=interaction.channel,
-                    dm=dm
-                ))
+                dm = await interaction.author.create_dm()
+                task1 = asyncio.create_task(
+                    self.rate_it(
+                        author=interaction.author, channel=interaction.channel, dm=dm
+                    )
+                )
                 ongoing_ratings.append(task1)
         except asyncio.TimeoutError:
             return
@@ -122,7 +168,7 @@ class ReportBug(commands.Cog):
         author: discord.Member,
         channel: discord.TextChannel,
         dm: discord.DMChannel,
-        command_msg: discord.Message = False
+        command_msg: discord.Message = False,
     ):
         current_semester = self.cursor.execute(
             f"""SELECT semester_id FROM current_semester
@@ -349,7 +395,7 @@ class ReportBug(commands.Cog):
                 )
         self.cursor.execute(
             f"""UPDATE vote_notify
-            SET last_voted = ?
+            SET last_voted = ?, last_notified = NULL, notified = "no"
             WHERE client_id == '{author.id}'
             """,
             (datetime.now(),),
