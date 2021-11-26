@@ -11,6 +11,7 @@ class ReportBug(commands.Cog):
     async def report(self, ctx: commands.Context, *, text: str = ""):
         """For reporting bugs to the developer server in proper channel"""
         text = text.strip()
+        attachments = ctx.message.attachments
         server = ctx.guild
         channel = ctx.channel
         author = ctx.author
@@ -33,6 +34,12 @@ class ReportBug(commands.Cog):
             embed.add_field(
                 name="Time", value=f"<t:{int(datetime.now().timestamp())}:F>"
             )
+            if attachments:
+                for i, j in enumerate(attachments):
+                    embed.add_field(
+                        name=f"Attachment {i+1}", value=f"[Link]({j.url})", inline=False
+                    )
+
             await self.bot.DEV_SERVER_BUGS_CHANNEL.send(embed=embed)
 
 
