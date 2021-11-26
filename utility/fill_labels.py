@@ -12,7 +12,9 @@ def fill_label(lst, bg_colors=None, font_colors=None, texts=None):
         texts = ["Hello"] * len(lst)
 
     if not len(lst) == len(bg_colors) == len(font_colors) == len(texts):
-        raise ValueError("Inappropriate dimensions for background or font colors")
+        raise ValueError(
+            "Inappropriate dimensions for background, font colors or texts"
+        )
     im = Image.open("./assets/Pinkish_theme.png")
     for coords, bg, font, text in zip(lst, bg_colors, font_colors, texts):
         im.paste(generate_label(text, bg, font), coords)

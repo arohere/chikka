@@ -15,13 +15,13 @@ def generate_tt(
     flatten = []
     for i in list_2d:
         flatten.extend(i)
-    if len(flatten) != coords:
+    if len(flatten) != len(coords):
         raise ValueError(
             "Dimension mismatch, make sure to pass an empty string for empty elements"
         )
     dct = {}
     light, dark = iter(cycle(pallette_light)), iter(cycle(pallette_dark))
-    t_dark, t_light = iter(cycle(text_light)), iter(cycle(text_dark))
+    t_light, t_dark = iter(cycle(text_light)), iter(cycle(text_dark))
     txt_list = []
     font_lst = []
     color_lst = []
@@ -29,11 +29,21 @@ def generate_tt(
     for txt, coord in zip(flatten, coords):
         if txt == "":
             continue
-        if i in dct:
+        if txt in dct:
             color_lst.append(dct[i])
         else:
             txt_list.append(process_text(txt))
             coord_lst.append(coord)
             font_lst.append(next(t_dark if function_check_dark(txt) else t_light))
             color_lst.append(next(dark if function_check_dark(txt) else light))
-    return coord_lst, font_lst, color_lst, txt_list
+    return coord_lst, color_lst, font_lst, txt_list
+
+
+if __name__ == "__main__":
+    from fill_labels import fill_label
+
+    lst = [
+        ["Hi", "", "Hello", "Hmm", "Bye", "", "", "", "", "", "CSEL", "BLAH"]
+        for _ in range(7)
+    ]
+    fill_label(*generate_tt(lst)).show()
