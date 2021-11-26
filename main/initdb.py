@@ -66,7 +66,8 @@ def create_database():
         """CREATE TABLE vote_notify(
             client_id varchar,
             last_voted varchar,
-            last_notified varchar
+            last_notified varchar,
+            notified varchar default "no"
         )
         """
     )
