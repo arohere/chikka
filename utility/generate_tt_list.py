@@ -4,11 +4,12 @@ from itertools import cycle
 
 def generate_tt(
     list_2d,
-    pallette_dark=[()],
-    pallette_light=[()],
-    text_dark=[()],
-    text_light=[()],
-    function_chech_dark=lambda a: a.endswith("L"),
+    pallette_dark=[(0, 0, 0)],
+    pallette_light=[(255, 255, 255)],
+    text_dark=[(255, 255, 255)],
+    text_light=[(0, 0, 0)],
+    function_check_dark=lambda a: a.endswith("L"),
+    process_text=lambda a: a,
 ):
     coords = get_coords()
     flatten = []
@@ -31,12 +32,8 @@ def generate_tt(
         if i in dct:
             color_lst.append(dct[i])
         else:
-            txt_list.append(txt)
+            txt_list.append(process_text(txt))
             coord_lst.append(coord)
-            if function_chech_dark(txt):
-                font_lst.append(next(t_dark))
-                color_lst.append(next(dark))
-            else:
-                font_lst.append(next(t_light))
-                color_lst.append(next(light))
+            font_lst.append(next(t_dark if function_check_dark(txt) else t_light))
+            color_lst.append(next(dark if function_check_dark(txt) else light))
     return coord_lst, font_lst, color_lst, txt_list
