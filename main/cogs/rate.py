@@ -1,8 +1,8 @@
 import asyncio
-from discord import emoji
-from discord.ext import commands
+from discord import client, colour, emoji
+from discord.ext import commands, tasks
 import discord
-from datetime import datetime
+from datetime import datetime, timedelta
 import sqlite3
 
 from discord_components.component import Button, ButtonStyle, Select, SelectOption
@@ -26,21 +26,112 @@ class ReportBug(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.client = bot
         self.cursor: sqlite3.Connection = bot.cursor
+        self.check_ratings.start()
 
     # add to vote_notify, last_voted
     # check for DM errors, try except
 
+    @tasks.loop(hours=168)
+    async def check_ratings(self):
+        print("running loop")
+        data = self.cursor.execute(
+            f"""SELECT client_id FROM vote_notify
+            WHERE last_voted < ? and (last_notified is NULL or last_notified < last_voted)
+            """,
+            (datetime.now() - timedelta(days=31),),
+        ).fetchall()
+        client_ids = [int(a[0]) for a in data]
+        embed = discord.Embed(
+            colour=discord.Colour.from_rgb(207, 68, 119),
+            title="Rate your faculties",
+            description=(
+                "It's been a month since you last rated your faculties. Click on the button below to take the 2 minute survey.\n\n"
+                "These surveys help Kartus to assess faculties, and the consolidated ratings of each faculty is made available to all users."
+                "This data enables the user to make an informed choice in selecting their faculties for the upcoming semester.\n\n"
+                "Failing to take the survey will restrict you from viewing faculty ratings and using Kartus features."
+            ),
+        )
+        components = [
+            [
+                Button(
+                    label="Click Here to Rate",
+                    custom_id="DM_rate_request_button",
+                    style=ButtonStyle.green,
+                )
+            ]
+        ]
+        total_request_messages = []
+        start_time = datetime.now()
+        asyncio.create_task(self.reply_to_interactions(timedelta(hours=1)))
+        for a in client_ids:
+            user: discord.User = self.client.get_user(a)
+            dm = await user.create_dm()
+            request_message = await dm.send(embed=embed, components=components)
+            total_request_messages.append(request_message)
+
+        data = self.cursor.execute( # add already notified bool
+            f"""SELECT client_id, last_voted, last_notified FROM vote_notify
+            WHERE last_notified < ? and notified == "no"
+            """,
+            (datetime.now() - timedelta(days=14),),
+        ).fetchall()
+        client_ids = [int(a[0]) for a in data.fetchall()]
+
+    @check_ratings.before_loop
+    async def before_rating(self):
+        now = datetime.now()
+        day = now.weekday()
+        day = 0 if day == 0 and now.hour < 13 else 8 - day
+        hours = 13 - now.hour
+        total_seconds = timedelta(days=day, hours=hours).total_seconds()
+        await asyncio.sleep(total_seconds)
+
+    async def reply_to_interactions(
+        self, timeout_delta: timedelta
+    ):
+        endtime = datetime.now() + timeout_delta
+        try:
+            ongoing_ratings = []
+            while True:
+                interaction : Interaction = await self.client.wait_for(
+                    "button_click",
+                    timeout=(endtime - datetime.now()).total_seconds(),
+                    check=lambda i: i.custom_id == "DM_rate_request_button",
+                )
+                dm = await interaction.author.create_dm()
+                await interaction.disable_components()
+                task1 = asyncio.create_task(self.rate_it(
+                    author=interaction.author,
+                    channel=interaction.channel,
+                    dm=dm
+                ))
+                ongoing_ratings.append(task1)
+        except asyncio.TimeoutError:
+            return
+
     @commands.command()
     async def rate(self, ctx: commands.Context):  # remove and pass through ctx
+        author = ctx.author
+        channel = ctx.channel
+        dm = await ctx.author.create_dm()
+        command_msg = ctx.message
+        await self.rate_it(author, channel, dm, command_msg)
 
+    async def rate_it(
+        self,
+        author: discord.Member,
+        channel: discord.TextChannel,
+        dm: discord.DMChannel,
+        command_msg: discord.Message = False
+    ):
         current_semester = self.cursor.execute(
             f"""SELECT semester_id FROM current_semester
-            WHERE client_id = '{ctx.author.id}'
+            WHERE client_id = '{author.id}'
             """
         ).fetchone()[0]
         rated_data = self.cursor.execute(
             f"""SELECT * FROM client_faculty_rate
-            WHERE client_id = '{ctx.author.id}' AND semester_id = '{current_semester}'
+            WHERE client_id = '{author.id}' AND semester_id = '{current_semester}'
             """
         ).fetchall()
         faculty_data = {}
@@ -89,11 +180,6 @@ class ReportBug(commands.Cog):
             colour=discord.Colour.from_rgb(207, 68, 119),
         )
         embeds = [emb]
-        if "redirect_from_signup" in dir(ctx) and ctx.redirect_from_signup:
-            dm = ctx.dm
-        else:
-            ctx.redirect_from_signup = False
-            dm = await ctx.author.create_dm()
 
         try:
             msg = await dm.send(
@@ -102,19 +188,20 @@ class ReportBug(commands.Cog):
                     Select(placeholder="Select a faculty", options=selection_options)
                 ],
             )
-            if not ctx.redirect_from_signup:
-                await ctx.send("Check your DMs.")
+            if command_msg:
+                await command_msg.reply("Check your DMs.")
         except discord.errors.Forbidden:
             """
             ask users to enable messages from server members option in settings
             """
-            await ctx.send(
-                embed=discord.Embed(
-                    description="Enable messages from server members in settings to rate.",
-                    image_url="https://cdn.discordapp.com/attachments/885410368015446097/907901692836741120/unknown.png",
-                    colour=discord.Colour.from_rgb(207, 68, 119),
+            if command_msg:
+                await command_msg.reply(
+                    embed=discord.Embed(
+                        description="Enable messages from server members in settings to rate.",
+                        image_url="https://cdn.discordapp.com/attachments/885410368015446097/907901692836741120/unknown.png",
+                        colour=discord.Colour.from_rgb(207, 68, 119),
+                    )
                 )
-            )
             return
         # check try or except send embed and go into while loop
         options_for_rating = [
@@ -136,7 +223,7 @@ class ReportBug(commands.Cog):
         while selection_options:
             interaction: Interaction = await self.client.wait_for(
                 "select_option",
-                check=lambda i: i.author == ctx.author and i.channel == dm,
+                check=lambda i: i.author == author and i.channel == dm,
             )
             faculty_name = interaction.values[0]
             before_rating_embed = discord.Embed(
@@ -149,6 +236,19 @@ class ReportBug(commands.Cog):
                 before_rating_embed.description = (
                     "This faculty has not been rated before"
                 )
+                kwargs_for_embeds = [
+                    {
+                        "name": "Average Rating",
+                        "value": return_hearts(0),
+                        "inline": True,
+                    },
+                    {
+                        "name": "Your Previous Rating",
+                        "value": return_hearts(0),
+                        "inline": True,
+                    },
+                    {"name": "‎", "value": "‎", "inline": True},
+                ]
             else:
                 kwargs_for_embeds = [
                     {
@@ -187,11 +287,11 @@ class ReportBug(commands.Cog):
                 [
                     self.client.wait_for(
                         "select_option",
-                        check=lambda i: i.author == ctx.author and i.channel == dm,
+                        check=lambda i: i.author == author and i.channel == dm,
                     ),
                     self.client.wait_for(
                         "button_click",
-                        check=lambda i: i.author == ctx.author and i.channel == dm,
+                        check=lambda i: i.author == author and i.channel == dm,
                     ),
                 ],
                 return_when=asyncio.FIRST_COMPLETED,
@@ -237,16 +337,23 @@ class ReportBug(commands.Cog):
                 self.cursor.execute(
                     f"""UPDATE client_faculty_rate
                 SET rating = 0, blacklisted = 'yes'
-                WHERE client_id = '{ctx.author.id}' AND semester_id = '{current_semester}' AND faculty_name = '{a}'
+                WHERE client_id = '{author.id}' AND semester_id = '{current_semester}' AND faculty_name = '{a}'
                 """
                 )
             else:
                 self.cursor.execute(
                     f"""UPDATE client_faculty_rate
                 SET rating = {rating_data[a]}, blacklisted = NULL
-                WHERE client_id = '{ctx.author.id}' AND semester_id = '{current_semester}' AND faculty_name = '{a}'
+                WHERE client_id = '{author.id}' AND semester_id = '{current_semester}' AND faculty_name = '{a}'
                 """
                 )
+        self.cursor.execute(
+            f"""UPDATE vote_notify
+            SET last_voted = ?
+            WHERE client_id == '{author.id}'
+            """,
+            (datetime.now(),),
+        )
         self.cursor.commit()
         await interaction.respond(
             content="review done!", embeds=embeds, components=[], type=7
