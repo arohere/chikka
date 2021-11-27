@@ -244,6 +244,7 @@ class Rate(commands.Cog):
             else:
                 selected = "blacklist"
                 
+            # print(faculty_name, " - ", selected)
             rating_data[faculty_name] = selected
 
             for a in selection_options:
