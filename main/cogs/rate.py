@@ -32,17 +32,18 @@ class Rate(commands.Cog):
     # add to vote_notify, last_voted
     # check for DM errors, try except
 
-    # @tasks.loop(hours=168)
+    # @tasks.loop(hours=168) # runs every week
     @tasks.loop(seconds=20)
     async def check_ratings(self):
-        data = await sql_queries.fetch_yet_to_notify(self.cursor)
+        # fetch client_ids who have voted x days ago and not yet notified
+        data = await sql_queries.fetch_yet_to_notify(self.cursor) 
         client_ids = [int(a[0]) for a in data]
         embed = embeds_for_rate.notify_warning_1
         components = [[
                 Button(label="Click Here to Rate",custom_id="DM_rate_request_button",
                     style=ButtonStyle.green)
             ]]
-        total_request_messages = []
+        total_request_messages = [] # append messages to list to disable components after x hours
 
         # end_time = datetime.now() - timedelta(hours=1)
         end_time = datetime.now() + timedelta(minutes=2)
@@ -52,14 +53,15 @@ class Rate(commands.Cog):
         for a in client_ids:
             user: discord.User = self.client.get_user(a)
             dm = await user.create_dm()
-            try:
+            try: # try to send else ignore
                 request_message = await dm.send(embed=embed, components=components)
             except discord.errors.Forbidden:
                 continue
             total_request_messages.append(request_message)
-            await sql_queries.update_last_notify(self.cursor,a)
+            await sql_queries.update_last_notify(self.cursor,a) # update notified date to sql database
         self.cursor.commit()
 
+        #fetch client_ids who have been notified x days ago. notify them for the last time
         embed = embeds_for_rate.notify_warning_2
         data = await sql_queries.fetch_yet_to_notify_again(self.cursor)
         client_ids = [int(a[0]) for a in data]
@@ -73,16 +75,18 @@ class Rate(commands.Cog):
             total_request_messages.append(request_message)
             await sql_queries.update_last_notify_again(self.cursor,a)
         self.cursor.commit()
+
         if total_request_messages:
             total_seconds = (end_time - datetime.now()).total_seconds()
-            print(total_seconds)
-            await asyncio.sleep(total_seconds)
+            await asyncio.sleep(total_seconds) # sleep for x hours and disable components
             for msg in total_request_messages:
                 await msg.disable_components()
 
     @check_ratings.before_loop
     async def before_rating(self):
         await self.client.wait_until_ready()
+
+    # starts the loop upcomming Monday, 12:00 - 13:00
 
     # @check_ratings.before_loop
     # async def before_rating(self):
@@ -97,7 +101,7 @@ class Rate(commands.Cog):
         endtime = datetime.now() + timeout_delta
         try:
             ongoing_ratings = []
-            while True:
+            while True: # listen to interactions until timeout (alter timedelta to change timeout)
                 interaction: Interaction = await self.client.wait_for(
                     "button_click",
                     timeout=(endtime - datetime.now()).total_seconds(),
@@ -110,7 +114,7 @@ class Rate(commands.Cog):
                         author=interaction.author, channel=interaction.channel, dm=dm
                     )
                 )
-                ongoing_ratings.append(task1)
+                ongoing_ratings.append(task1) # for future management
         except asyncio.TimeoutError:
             return
 
@@ -135,10 +139,10 @@ class Rate(commands.Cog):
 
         faculty_data = {}
         
-        for a in rated_data:         
-            ratings_for_faculty = await sql_queries.ratings_for_faculty(self.cursor,a)
+        for a in rated_data:     # a = ('PUNITHAVELAN N', '608276451074113539', 'CH20212217', None, None, '2021-11-27 10:03:07.741726')
+            ratings_for_faculty = await sql_queries.ratings_for_faculty(self.cursor,a[0])
 
-            blacklisted_count = await sql_queries.blacklisted_count_for_faculty(self.cursor,a)
+            blacklisted_count = await sql_queries.blacklisted_count_for_faculty(self.cursor,a[0])
 
             total_records = len(ratings_for_faculty) + blacklisted_count
             
@@ -146,7 +150,7 @@ class Rate(commands.Cog):
                 faculty_data[a[0]] = {"not_rated_before": True}
                 continue
 
-            total_student_count = await sql_queries.total_students_for_faculty
+            total_student_count = await sql_queries.total_students_for_faculty(self.cursor,a[0])
 
 
             faculty_data[a[0]] = await calculations.get_faculty_summary(ratings_for_faculty,total_records,total_student_count,blacklisted_count,a[3])
@@ -215,7 +219,7 @@ class Rate(commands.Cog):
                     before_rating_embed.add_field(**kwargs)
                     
             msg = await interaction.respond(
-                embeds=embeds + [before_rating_embed],
+                embeds=[embeds[0]] + [before_rating_embed],
                 components=options_for_rating,
                 type=7,
             )
@@ -261,7 +265,7 @@ class Rate(commands.Cog):
 
             if selection_options:
                 await interaction.respond(
-                    embeds=embeds,
+                    embeds=[embeds[0]]+[embeds[-1]],
                     components=[
                         Select(
                             placeholder="Select a faculty", options=selection_options
@@ -275,7 +279,7 @@ class Rate(commands.Cog):
             if rating_data[a] == "blacklist":
                 await sql_queries.update_blacklist_rating(self.cursor,author.id,current_semester,a)
             else:
-                await sql_queries.update_rating(self.cursor,author.id,current_semester)
+                await sql_queries.update_rating(self.cursor,author.id,current_semester,faculty_name,rating_data)
         await sql_queries.update_voted_date(self.cursor,author.id)
         self.cursor.commit()
         await interaction.respond(
