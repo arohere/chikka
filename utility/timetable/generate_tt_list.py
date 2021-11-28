@@ -30,13 +30,20 @@ def generate_tt(
         if txt == "":
             continue
         if txt in dct:
-            color_lst.append(dct[i])
-        else:
+            color, font = dct[txt]
+            color_lst.append(color)
+            font_lst.append(font)
             txt_list.append(process_text(txt))
             coord_lst.append(coord)
-            font_lst.append(next(t_dark if function_check_dark(txt) else t_light))
-            color_lst.append(next(dark if function_check_dark(txt) else light))
-    return coord_lst, color_lst, font_lst, txt_list
+        else:
+            color = next(dark if function_check_dark(txt) else light)
+            font = next(t_dark if function_check_dark(txt) else t_light)
+            dct[txt] = [color, font]
+            txt_list.append(process_text(txt))
+            coord_lst.append(coord)
+            font_lst.append(font)
+            color_lst.append(color)
+    return coord_lst, color_lst, font_lst, txt_list, dct
 
 
 if __name__ == "__main__":
@@ -46,4 +53,6 @@ if __name__ == "__main__":
         ["Hi", "", "Hello", "Hmm", "Bye", "", "", "", "", "", "CSEL", "BLAH"]
         for _ in range(7)
     ]
-    fill_label(*generate_tt(lst)).show()
+    *params, dct = generate_tt(lst)
+    print(dct)
+    fill_label(*params).show()
