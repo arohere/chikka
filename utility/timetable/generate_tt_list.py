@@ -38,7 +38,7 @@ def generate_tt(
         else:
             color = next(dark if function_check_dark(txt) else light)
             font = next(t_dark if function_check_dark(txt) else t_light)
-            dct[txt] = [color, font]
+            dct[txt] = (color, font)
             txt_list.append(process_text(txt))
             coord_lst.append(coord)
             font_lst.append(font)
@@ -48,11 +48,13 @@ def generate_tt(
 
 if __name__ == "__main__":
     from fill_labels import fill_label
+    from footnotes import complete_footnotes
 
     lst = [
         ["Hi", "", "Hello", "Hmm", "Bye", "", "", "", "", "", "CSEL", "BLAH"]
         for _ in range(7)
     ]
     *params, dct = generate_tt(lst)
-    print(dct)
-    fill_label(*params).show()
+    upper = fill_label(*params)
+    complete = complete_footnotes(dct, upper)
+    complete.show()
