@@ -370,9 +370,17 @@ class SetupCommands(commands.Cog):
                     break
                 else:
                     attachment_data = await payload.attachments[0].read()
-                    html_parser = BeautifulSoup(
-                        attachment_data.decode("UTF-8"), "html.parser"
-                    )
+                    try:
+                        html_parser = BeautifulSoup(
+                            attachment_data.decode("UTF-8"), "html.parser"
+                        )
+                    except UnicodeDecodeError:
+                        new_emb = emb.copy()
+                        new_emb.title = "Oops! You have uploaded the Wrong HTML!"
+                        new_emb.description = f"Try using the other method or contact {self.client.aro.mention} if the error persists.\n\n"
+                        await payload.reply(embed=new_emb)
+                        continue
+                    
                     tables = html_parser.find_all("table")
                     n = html_parser.find_all("h3", attrs={"class": "box-title"})
                     if (not n) or not (
