@@ -17,22 +17,10 @@ class Group():
         self.CourseSubtitle = nodes[7]
         self.CourseCode = nodes[8]
         self.FacultyName = nodes[9]
-        self.MaxWidth = (int(float(nodes[2].getAttribute("width"))*2) - 81)
+        self.Width = int(float(nodes[2].getAttribute("width")))
+        self.MaxWidth = (self.Width*2 - 81)
         self.CenterCodePos = int(float(nodes[2].getAttribute("x")))
 
-        # self.CourseTitle = self._clear_nodes(nodes[6])
-        # self.CourseSubtitle = self._clear_nodes(nodes[7])
-        # self.CourseCode = self._clear_nodes(nodes[8])
-        # self.FacultyName = self._clear_nodes(nodes[9])
-
-    # def _clear_nodes(self,node):
-    #     for x in node.childNodes:
-    #         if isinstance(x,minidom.Text):
-    #             node.removeChild(x)
-    #     for x in node.getElementsByTagName("tspan"):
-    #         parent = x.parentNode
-    #         parent.removeChild(x)
-    #     return node
     def _format_text(self, string: str):
         max_width = self.MaxWidth
         font_size = 38
@@ -70,17 +58,21 @@ class Group():
             new_line.appendChild(self.doc.createTextNode(lines[a]))
             self.CourseTitle.appendChild(new_line)
 
-    def set_subtitle(self,title:str):
-        pass
+    def set_subtitle(self,sub_title:str):
+        self.CourseSubtitle.appendChild(self.doc.createTextNode(sub_title))
     
-    def set_course_code(self,title:str):
+    def set_course_code(self,course:str):
         x,y = re.split("[(]| |[)]",self.CourseCode.getAttribute("transform"))[1:3]
         self.CourseCode.setAttribute("text-anchor","middle")
         self.CourseCode.setAttribute("transform",f"translate({self.CenterCodePos} {y})")
-        self.CourseCode.appendChild(self.doc.createTextNode(title.upper()))
+        self.CourseCode.appendChild(self.doc.createTextNode(course.upper()))
 
-    def set_faculty_name(self,title:str):
-        pass
+    def set_faculty_name(self,faculty_name:str):
+        x,y = re.split("[(]| |[)]",self.FacultyName.getAttribute("transform"))[1:3]
+        self.FacultyName.setAttribute("text-anchor","middle")
+        self.FacultyName.setAttribute("transform",f"translate({(self.Width//2) + float(x)} {y})")
+        self.FacultyName.appendChild(self.doc.createTextNode(faculty_name))
+        
 
 class FootnotesCreator():
 
@@ -96,15 +88,17 @@ class FootnotesCreator():
             group_element.set_border_path_colour(x())
             group_element.set_course_code("21BPS1102")
             group_element.set_course_title("Cognitive Thinking and psychological depression")
+            group_element.set_subtitle("(Theory Only)")
+            group_element.set_faculty_name("S SELVENDRAN")
 
     def return_svg(self):
         return self.doc.toprettyxml()
 
 
 if __name__ == "__main__":
-    obj = FootnotesCreator(open(r"F:\Projects\Discord Bot\figma\new\1_14 classes 2.svg"))
+    obj = FootnotesCreator(open(r".\assets\testing_templates\template for 13 footers.svg"))
     obj.change_colours()
-    with open(r"F:\Projects\Discord Bot\figma\new\1_14 classes 3.svg","w") as f:
+    with open(r".\assets\testing_templates\template for 13 footers output.svg","w") as f:
         f.write(obj.return_svg())
     
         
