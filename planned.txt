@@ -25,12 +25,12 @@ Aro:
     1. Create a rating embed/interaction
         i. create another table to store clients last rated date and last notified date ✔
         ii. ask for rating after sign up 
-        iii. check every monday for clients who have not rated for one month or have been notified two weeks before
-        iv. create global check to see if user has rated past one month
-        v. to display the rating, find the mean and mean deviation and mention lesser the deviation more accurate the value is
-        vi. check campus while rating and use semester ID to find current semester
+        iii. check every monday for clients who have not rated for one month or have been notified two weeks before ✔
+        iv. create global check to see if user has rated past one month 
+        v. to display the rating, find the mean and mean deviation and mention lesser the deviation more accurate the value is ✔
+        vi. check campus while rating and use semester ID to find current semester ✔
     2. Add a change semester feature with update schedule feature
-    3. fetch data from table_2 html, format, cpickle and store in mysql table with semester_id.
+    3. fetch data from table_2 html, format, cpickle and store in mysql table with semester_id. 
         i. to retrive current sem data, from current sem fetch current_semester and use to reference schedule_data
     4. add reloading commands permissions only for kartus devs
     5. Create Roles for each department, give verified role to signups and add checks to kartus such that only verified ppl can use commands
