@@ -1,0 +1,110 @@
+from xml.dom import minidom
+from typing import List
+import random
+from PIL import Image, ImageDraw, ImageFont
+import re 
+r = lambda: random.randint(0,255)
+x = lambda: '#%02X%02X%02X' % (r(),r(),r())
+class Group():
+
+    def __init__(self,group:minidom.Element,doc:minidom.Document) -> None:
+        self.doc = doc
+        nodes = group.childNodes
+        nodes : List[minidom.Element]
+        self.InnerLabel = nodes[0]
+        self.BorderPaths = nodes[1:6]
+        self.CourseTitle = nodes[6]
+        self.CourseSubtitle = nodes[7]
+        self.CourseCode = nodes[8]
+        self.FacultyName = nodes[9]
+        self.MaxWidth = (int(float(nodes[2].getAttribute("width"))*2) - 81)
+        self.CenterCodePos = int(float(nodes[2].getAttribute("x")))
+
+        # self.CourseTitle = self._clear_nodes(nodes[6])
+        # self.CourseSubtitle = self._clear_nodes(nodes[7])
+        # self.CourseCode = self._clear_nodes(nodes[8])
+        # self.FacultyName = self._clear_nodes(nodes[9])
+
+    # def _clear_nodes(self,node):
+    #     for x in node.childNodes:
+    #         if isinstance(x,minidom.Text):
+    #             node.removeChild(x)
+    #     for x in node.getElementsByTagName("tspan"):
+    #         parent = x.parentNode
+    #         parent.removeChild(x)
+    #     return node
+    def _format_text(self, string: str):
+        max_width = self.MaxWidth
+        font_size = 38
+        font = ImageFont.truetype("./assets/Fonts/Bw Modelica/BwModelica-Bold.otf",font_size)
+        string = string.split()
+        final_out = ""
+        lines = 0
+        while lines < 3 and string:
+            for a in range(len(string),0,-1):
+                current_string = " ".join(string[:a])
+                (width, baseline), (offset_x, offset_y) = font.font.getsize(current_string)
+                # print((width, baseline), (offset_x, offset_y),(current_string))
+                if width < max_width:
+                    final_out += current_string + "\n"
+                    string = string[a:]
+                    lines += 1
+                    break
+            else:
+                raise ValueError(f"a word is too big: {current_string}")
+        return final_out.strip()
+
+    def set_inner_label_colour(self,hex:str):
+        self.InnerLabel.setAttribute("fill",hex)
+
+    def set_border_path_colour(self,hex:str):
+        for path in self.BorderPaths:
+            path.setAttribute("fill",hex)
+
+    def set_course_title(self,title:str,height=41):
+        lines = self._format_text(title).split("\n")
+        for a in range(len(lines)):
+            new_line : minidom.Element = self.doc.createElement("tspan")
+            new_line.setAttribute("x","0")
+            new_line.setAttribute("y",str(height*a))
+            new_line.appendChild(self.doc.createTextNode(lines[a]))
+            self.CourseTitle.appendChild(new_line)
+
+    def set_subtitle(self,title:str):
+        pass
+    
+    def set_course_code(self,title:str):
+        x,y = re.split("[(]| |[)]",self.CourseCode.getAttribute("transform"))[1:3]
+        self.CourseCode.setAttribute("text-anchor","middle")
+        self.CourseCode.setAttribute("transform",f"translate({self.CenterCodePos} {y})")
+        self.CourseCode.appendChild(self.doc.createTextNode(title.upper()))
+
+    def set_faculty_name(self,title:str):
+        pass
+
+class FootnotesCreator():
+
+    def __init__(self,svg):
+        self.doc : minidom.Document = minidom.parse(svg)
+        self.groups : List[Group] = []
+        for d in self.doc.getElementsByTagName("g")[1:]:
+            self.groups.append(Group(d,self.doc))
+
+    def change_colours(self):
+        for group_element in self.groups:
+            group_element.set_inner_label_colour(x())
+            group_element.set_border_path_colour(x())
+            group_element.set_course_code("21BPS1102")
+            group_element.set_course_title("Cognitive Thinking and psychological depression")
+
+    def return_svg(self):
+        return self.doc.toprettyxml()
+
+
+if __name__ == "__main__":
+    obj = FootnotesCreator(open(r"F:\Projects\Discord Bot\figma\new\1_14 classes 2.svg"))
+    obj.change_colours()
+    with open(r"F:\Projects\Discord Bot\figma\new\1_14 classes 3.svg","w") as f:
+        f.write(obj.return_svg())
+    
+        
