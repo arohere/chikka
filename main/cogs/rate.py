@@ -280,7 +280,7 @@ class Rate(commands.Cog):
             if rating_data[a] == "blacklist":
                 await sql_queries.update_blacklist_rating(self.cursor,author.id,current_semester,a)
             else:
-                await sql_queries.update_rating(self.cursor,author.id,current_semester,faculty_name,rating_data)
+                await sql_queries.update_rating(self.cursor,author.id,current_semester,a,rating_data)
         await sql_queries.update_voted_date(self.cursor,author.id)
         self.cursor.commit()
         await interaction.respond(
