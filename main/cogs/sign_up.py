@@ -1,4 +1,5 @@
 import sqlite3
+from typing import DefaultDict
 from bs4 import BeautifulSoup
 import discord
 from discord.ext import commands
@@ -10,6 +11,8 @@ from discord_components.component import Button, ButtonStyle
 import asyncio
 from discord_components.interaction import Interaction
 from datetime import datetime
+import csv
+from difflib import SequenceMatcher as SM
 
 # Relative Import
 from cogs.Resources import selects_for_course  # import w.r.t CWD
@@ -35,6 +38,7 @@ def format_timetable_row(lis: list, client_id: int, semester_list: list):
         client_id,
         lis[2].split(" - ")[0],
         lis[2].split(" - ")[1],
+        lis[3],
         lis[6],
         ",".join(lis[7].replace(" - ", "").split("+")),
         lis[8],
@@ -42,8 +46,38 @@ def format_timetable_row(lis: list, client_id: int, semester_list: list):
         lis[10],
         semester_id["value"],
         semester_id.text,
+        0
     ]
 
+def embedded_course_check(row_data:list):
+    data = DefaultDict(lambda: 0)
+    for row in row_data:
+        data[row[1]] += 1
+    for row in row_data:
+        row[11] = data[row[1]]
+    return row_data
+
+
+async def notify_devs(client:discord.Client,dm,regno,registernumber,fullname,csv_fullname,ratio=0):
+    logs_chnl = client.get_channel(910108806254579722)
+    await dm.send(
+        embed = discord.Embed(
+            title = "Your sign-up attempt has been queued.",
+            description = "Verifying signup details might take a while. You'll be notified once it's done!"
+        ).set_footer(text="You will not recieve any response if your details seem suspicious/fake.")
+    )
+    msg = await logs_chnl.send(embed = discord.Embed(
+        description = f"User Tried Signup {client.aro.mention}. Details are as follows.\nEntered Name: - {fullname}\nFullname from CSV:- {csv_fullname}\nEntered Reg No:- {regno}\nRoll No in HTML:- {registernumber}\nRatio:- {ratio}"
+    ))
+    await msg.add_reaction(tick := "☑️")
+    await msg.add_reaction(x := "❌")
+    reaction , user = await client.wait_for("reaction_add",timeout=None,check = lambda m,u:u.id == 608276451074113539)
+    if str(reaction.emoji) == "☑️":
+        await msg.edit(content = "verified! ☑️")
+        return True
+    else:
+        await msg.edit(content = "not verified ❌")
+        return False
 
 class SetupCommands(commands.Cog):
 
@@ -194,7 +228,7 @@ class SetupCommands(commands.Cog):
         )
         interaction = await self.client.wait_for("select_option")
         branch = interaction.values[0]  # retrieves selected value
-
+        data["campus"] = branch
         """
         Refer the Structure of /kartus/main/cogs/Resources/selects_for_course.py
         to fully understand how lines 202 - 237 are executed.
@@ -211,6 +245,7 @@ class SetupCommands(commands.Cog):
         )
         interaction = await self.client.wait_for("select_option")
         degree = interaction.values[0]
+        data["degree"] = degree
         emb.add_field(name="Pursuing Degree", value=f"{degree}")
 
         if stream_components := selects_for_course.select_options[branch]["stream"][
@@ -228,6 +263,8 @@ class SetupCommands(commands.Cog):
             emb.add_field(name="Stream", value=f"{stream}")
         else:
             stream = degree
+
+        data["stream"] = stream
         emb.title = "Select your Course"
         await interaction.respond(
             embed=emb,
@@ -397,6 +434,34 @@ class SetupCommands(commands.Cog):
                     semester_list = html_parser.find(
                         "select", attrs={"class": "form-control"}
                     ).find_all("option")
+
+                    registernumber = html_parser.find(
+                        "a", attrs={"class":"dropdown-toggle small"}
+                    ).find_all("span")[1].text.split("(")[0]
+                    
+                    # FULL_NAME 
+                    # REG_NO
+                    verified = False
+                    csv_name = "None"
+                    ratio = 0
+                    if REG_NO == registernumber:
+                        with open(data_file_location,"r",encoding="UTF-8") as f:
+                            reader = csv.reader(f)
+                            for row in reader:
+                                if row:
+                                    if row[1] == REG_NO:
+                                        ratio = SM(None,row[0].lower(),FULL_NAME.lower()).ratio() * 100
+                                        csv_name = row[0]
+                                        if ratio > 50:
+                                            verified = True                                            
+                                        break
+                    
+                    if not verified:
+                        if not await notify_devs(self.client,dm,REG_NO,registernumber,FULL_NAME,csv_name,ratio):
+                            return
+                    else:
+                        await dm.send(f"verified {REG_NO,FULL_NAME,csv_name,ratio}")
+
                     rows = tables[0].find_all("tr")
                     filtered_rows = list(
                         filter(
@@ -410,8 +475,21 @@ class SetupCommands(commands.Cog):
                             row, ctx.author.id, semester_list=semester_list
                         )
                         row_data.append(row)
-                    semester_id = row_data[0][8]
-                    semester_name = row_data[0][9]
+                    semester_id = row_data[0][9]
+                    semester_name = row_data[0][10]
+                    row_data = embedded_course_check(row_data)
+
+                    tables = html_parser.find_all("table")
+                    table = tables[1]
+                    unfiltered_rows = table.find_all("tr")
+                    filtered_rows = [row.find_all("td") for row in unfiltered_rows]
+                    filtered_rows_with_txt = [[ element.text for element in row if element!="\n"] for row in unfiltered_rows]
+                    l1 = filtered_rows_with_txt[4:]
+                    i = len(l1)
+                    l2 = [l1[a][1:] if a%2 else l1[a][2:] for a in range(i)]
+                    l3 = [[ "" if len(element) < 5 else (element.split("-")+["LAB"] if c%2 else element.split("-")) for element in l2[c] if element.lower()!="lunch"] for c in range(len(l2))]
+                    cells_count = len(l3[0])
+                    final_table_data = [ [(l3[a][b] or l3[a+1][b]) for b in range(cells_count)] for a in range(0,len(l3),2)]
 
                     self.cursor.execute(
                         f"""INSERT INTO current_semester
@@ -443,7 +521,7 @@ class SetupCommands(commands.Cog):
                         """
                     )
 
-                    faculty_list = set([a[6] for a in row_data if a[7] != "ACAD"])
+                    faculty_list = set([a[7] for a in row_data if a[8] != "ACAD"])
                     data_for_rate = [
                         (a, ctx.author.id, semester_id, datetime.now())
                         for a in faculty_list
@@ -467,7 +545,42 @@ class SetupCommands(commands.Cog):
                         )
                         """
                     )
+                    
+                    self.cursor.execute(
+                        f"""INSERT INTO client_info values(
+                            "{ctx.author.id}",
+                            "{data["campus"]}",
+                            "test",
+                            "{data["stream"]}",
+                            "{data["CourseName"]}",
+                            "{data["name"]}",
+                            "{data["regno"]}"
+                        )
+                        """
+                    )
+                    
+                    self.cursor.executemany(
+                        f"""INSERT INTO schedule_data values(
+                            ?,
+                            ?,
+                            ?,
+                            ?,
+                            ?,
+                            ?,
+                            ?,
+                            ?,
+                            ?,
+                            ?,
+                            ?,
+                            ?
+                        )
+                        """,
+                        row_data
+                    )
 
+                    schedule_details = [[row[a].strip() for a in (1,2,3,5,7)] for row in row_data if row[6] != "NIL"]
+
+                    
                     self.cursor.commit()
                     await dm.send(
                         embed=discord.Embed(
@@ -476,6 +589,8 @@ class SetupCommands(commands.Cog):
                             colour=discord.Colour.from_rgb(207, 68, 119),
                         ).set_thumbnail(url=THUMBNAIL_URL)
                     )
+
+
                     # invoke rate
                     return
 
