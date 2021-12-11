@@ -5,6 +5,10 @@ from PIL import Image, ImageDraw, ImageFont
 import re 
 r = lambda: random.randint(0,255)
 x = lambda: '#%02X%02X%02X' % (r(),r(),r())
+
+schemes = {"Royal Purple":"7b4b94","Quick Silver":"a9a19c","Cadet Blue Crayola":"9aa5b9","Magic Mint":"b7e3cc","Antique Brass":"da946e","Middle Blue Purple":"7d82b8","Yellow Green Crayola":"d6f7a3","Ash Gray":"aabdae","Russian Green":"77875c","Bistre":"3a2618"}
+
+
 class Group():
 
     def __init__(self,group:minidom.Element,doc:minidom.Document) -> None:
@@ -18,8 +22,8 @@ class Group():
         self.CourseCode = nodes[8]
         self.FacultyName = nodes[9]
         self.Width = int(float(nodes[2].getAttribute("width")))
-        self.MaxWidth = (self.Width*2 - 81)
-        self.CenterCodePos = int(float(nodes[2].getAttribute("x")))
+        self.MaxWidth = (self.Width*1.5)
+        self.CenterCodePos = int(float(nodes[2].getAttribute("x"))) + 5
 
     def _format_text(self, string: str):
         max_width = self.MaxWidth
@@ -86,19 +90,19 @@ class FootnotesCreator():
         for group_element in self.groups:
             group_element.set_inner_label_colour(x())
             group_element.set_border_path_colour(x())
-            group_element.set_course_code("21BPS1102")
+            group_element.set_course_code("ARO HERE")
             group_element.set_course_title("Cognitive Thinking and psychological depression")
             group_element.set_subtitle("(Theory Only)")
-            group_element.set_faculty_name("S SELVENDRAN")
+            group_element.set_faculty_name("PUNITHAVELAN N")
 
     def return_svg(self):
         return self.doc.toprettyxml()
 
 
 if __name__ == "__main__":
-    obj = FootnotesCreator(open(r".\assets\testing_templates\template for 13 footers.svg"))
+    obj = FootnotesCreator(open(r"assets\Footer Templates\9 classes.svg"))
+    # obj = FootnotesCreator(open(r".\assets\testing_templates\template for 13 footers.svg"))
     obj.change_colours()
     with open(r".\assets\testing_templates\template for 13 footers output.svg","w") as f:
         f.write(obj.return_svg())
     
-        
