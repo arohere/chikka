@@ -28,13 +28,15 @@ def create_database():
         client_id varchar,
         course_code varchar,
         course_name varchar,
+        course_type varchar,
         course_id varchar,
         slot varchar,
         venue varchar,
         faculty_name varchar,
         faculty_school varchar,
         semester_id varchar,
-        semester_name varchar
+        semester_name varchar,
+        embedded_courses int
     )
     """
     )
@@ -44,11 +46,10 @@ def create_database():
         client_id varchar UNIQUE,
         campus varchar,
         email varchar,
-        school varchar,
+        stream varchar,
         full_course_name varchar,
         full_name varchar,
-        reg_no varchar,
-        current_year varchar
+        reg_no varchar
     )
     """
     )
@@ -90,5 +91,18 @@ def create_database():
         )
         """
     )
+
+    cursor.execute(
+        """CREATE TABLE schedule_display_data(
+        client_id varchar,
+        course_details json,
+        schedule_details json,
+        semester_id varchar,
+        semester_name varchar,
+        full_name varchar
+        )
+        """
+    )
+    
     cursor.commit()
     return cursor
