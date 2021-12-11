@@ -65,10 +65,19 @@ class Group():
     def set_subtitle(self,sub_title:str):
         self.CourseSubtitle.appendChild(self.doc.createTextNode(sub_title))
     
-    def set_course_code(self,course:str):
+    def set_font_colour(self,colour="ffffff"):
+        script = self.doc.getElementsByTagName("style")[0]
+        node = script.childNodes[0]
+        text = node.nodeValue
+        text = text.replace("231f20",colour)
+        script.removeChild(node)
+        script.appendChild(self.doc.createTextNode(text))
+
+    def set_course_code(self,course:str,colour="000000"):
         x,y = re.split("[(]| |[)]",self.CourseCode.getAttribute("transform"))[1:3]
         self.CourseCode.setAttribute("text-anchor","middle")
         self.CourseCode.setAttribute("transform",f"translate({self.CenterCodePos} {y})")
+        self.CourseCode.setAttribute("style",f"fill:{colour}")
         self.CourseCode.appendChild(self.doc.createTextNode(course.upper()))
 
     def set_faculty_name(self,faculty_name:str):
