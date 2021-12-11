@@ -48,7 +48,7 @@ class Rate(commands.Cog):
         # end_time = datetime.now() - timedelta(hours=1)
         end_time = datetime.now() + timedelta(minutes=2)
         # asyncio.create_task(self.reply_to_interactions(timedelta(hours=1)))
-        asyncio.create_task(self.reply_to_interactions(timedelta(minutes=1)))
+        asyncio.create_task(self.reply_to_interactions(timedelta(minutes=2)))
 
         for a in client_ids:
             user: discord.User = self.client.get_user(a)

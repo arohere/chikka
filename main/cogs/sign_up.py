@@ -13,7 +13,7 @@ from discord_components.interaction import Interaction
 from datetime import datetime
 import csv
 from difflib import SequenceMatcher as SM
-
+import json
 # Relative Import
 from cogs.Resources import selects_for_course  # import w.r.t CWD
 
@@ -25,6 +25,7 @@ contains Select Options for Course selection during signup
 
 THUMBNAIL_URL = "https://cdn.discordapp.com/attachments/872059879379050527/889749015938334730/Copy_of_VITC25.png"
 
+data_file_location = r"F:\Projects\Discord Bot\Database\users(format).csv"
 
 def format_timetable_row(lis: list, client_id: int, semester_list: list):
     for semester_id in semester_list:
@@ -487,7 +488,7 @@ class SetupCommands(commands.Cog):
                     l1 = filtered_rows_with_txt[4:]
                     i = len(l1)
                     l2 = [l1[a][1:] if a%2 else l1[a][2:] for a in range(i)]
-                    l3 = [[ "" if len(element) < 5 else (element.split("-")+["LAB"] if c%2 else element.split("-")) for element in l2[c] if element.lower()!="lunch"] for c in range(len(l2))]
+                    l3 = [[ "" if len(element) < 5 else ([element.split("-")[1]]+["LAB"] if c%2 else [element.split("-")[1]]) for element in l2[c] if element.lower()!="lunch"] for c in range(len(l2))]
                     cells_count = len(l3[0])
                     final_table_data = [ [(l3[a][b] or l3[a+1][b]) for b in range(cells_count)] for a in range(0,len(l3),2)]
 
@@ -580,6 +581,10 @@ class SetupCommands(commands.Cog):
 
                     schedule_details = [[row[a].strip() for a in (1,2,3,5,7)] for row in row_data if row[6] != "NIL"]
 
+                    self.cursor.execute(
+                        f"""INSERT INTO schedule_display_data values(?,?,?,?,?,?)""",
+                        [str(ctx.author.id),json.dumps(schedule_details),json.dumps(final_table_data),semester_id,semester_name,FULL_NAME]
+                    )
                     
                     self.cursor.commit()
                     await dm.send(
