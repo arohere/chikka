@@ -1,0 +1,30 @@
+{
+    "start_end_colour": "30304F",
+    "week_colour": "A8A8ED",
+    "timings_colour": "434360",
+    "start_end_colour_font": "00000",
+    "week_colour_font": "000000",
+    "timings_colour_font": "000000",
+    "semitransparent_bg": "2F3E63",
+    "sem_name_user_name": "A8A8ED",
+    "rectange_stroke": "8F8FBF",
+    "colours": {
+        "Royal Purple": "7b4b94",
+        "Quick Silver": "a9a19c",
+        "Cadet Blue Crayola": "9aa5b9",
+        "Magic Mint": "b7e3cc",
+        "Antique Brass": "da946e",
+        "Middle Blue Purple": "7d82b8",
+        "Yellow Green Crayola": "d6f7a3",
+        "Ash Gray": "aabdae",
+        "Russian Green": "77875c",
+        "Bistre": "3a2618",
+        "Cafe Au Lait": "a37b5a",
+        "Blue Gray": "5895c7",
+        "Persian Orange": "d6945e",
+        "Spanish Gray": "979593",
+        "Beau Blue": "d1e0ed",
+        "Dark Electric Blue": "5e7588",
+        "Spanish Blue": "186eb5"
+    }
+}
