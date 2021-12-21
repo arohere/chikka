@@ -4,7 +4,7 @@ import re
 import os
 import json
 import random
-from footers import Group
+from cogs.utility.timetable.footers import Group
 from typing import List
 from cairosvg import svg2png
 from PIL import Image
@@ -126,7 +126,7 @@ class TimeTable():
         return [self.footers_doc.toxml(), self.doc.toxml()]
 
     def export_png(self):
-        out = obj._return_svg()
+        out = self._return_svg()
         footers = svg2png(bytestring=out[0])
         table = svg2png(bytestring=out[1])
         footer_foreground = Image.open(io.BytesIO(footers))
@@ -134,7 +134,10 @@ class TimeTable():
         table_background , footer_foreground = table_background.convert("RGBA") , footer_foreground.convert("RGBA")
         x, y = (67,1435)
         table_background.paste(footer_foreground,(x,y),footer_foreground)
-        table_background.save("./test_runs/new.png", format="png")
+        img_byte_arr = io.BytesIO()
+        table_background.save(img_byte_arr, format="png")
+        img_byte_arr.seek(0)
+        return img_byte_arr
 
 
 
