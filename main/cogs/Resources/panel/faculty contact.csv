@@ -1,0 +1,139 @@
+S.No,Emp Id,Prfix,Faculty Name,Gender,Mobile #,Email Id
+1,50386,Dr.,Abdul Quadir Md,M,9884004139,abdulquadir.md@vit.ac.in
+2,50390,Dr.,Alok Chauhan,M,8939527797,alok.chauhan@vit.ac.in
+3,51326,Dr.,Amit Kumar Tyagi,M,8072350132,amitkumar.tyagi@vit.ac.in
+4,51665,Dr.,Amrit Pal,M,8318699522,amrit.pal@vit.ac.in
+5,51662,Dr.,Anita X,F,9444307868,anita.x@vit.ac.in
+6,50930,Dr.,Anusha K,F,9444066729,anusha.k@vit.ac.in
+7,50408,Dr.,Anusooya G,F,9176313600,anusooya.g@vit.ac.in
+8,50178,Dr.,Appalaraju Muralidhar,M,9094962433,muralidhar.a@vit.ac.in
+9,51678,Dr.,Arun Kumar Sivaraman,M,7397435502 / 9600049490,arunkumar.sivaraman@vit.ac.in
+10,50442,Dr.,Asha S,F,9884774695,asha.s@vit.ac.in
+11,51654,Dr.,Ashoka Rajan R,M,7871396998,ashokarajan.r@vit.ac.in
+12,50590,Dr.,Asnath Victy Phamila Y,F,9884322100,asnathvicty.phamila@vit.ac.in
+13,51339,Dr.,Ayesha SK,F,6383322170,ayesha.sk@vit.ac.in
+14,50276,Dr.,B V A N S S Prabhakar Rao ,M,9952096295,prabhakarrao@vit.ac.in
+15,51461,Dr.,Balasundaram A,M,9841288826,balasundaram.a@vit.ac.in
+16,51668,Dr.,Bhanu Chander Balusa,M,9550616763,bhanuchander.balusa@vit.ac.in
+17,50319,Dr. ,Bharadwaja Kumar,M,9092959969,bharadwaja.kumar@vit.ac.in
+18,50299,Dr.,Bharathi Raja S,M,9841929299,bharathiraja.s@vit.ac.in
+19,51347,Dr.,Bhuvaneswari A,F,9894007258,bhuvaneswari.a@vit.ac.in
+20,51327,Dr.,Braveen M,M,9566552227,braveen.m@vit.ac.in
+21,50388,Dr.,Christy Jackson J,M,8939109547,christyjackson.j@vit.ac.in
+22,51742,Dr.,Cinu C Kiliroor,F,9884371514,cinu.kiliroor@vit.ac.in
+23,51653,Dr.,Edward Jero S,M,9600047486,edwardjero.s@vit.ac.in
+24,51679,Dr.,Ganala Santoshi,M,08056976904/09494499838,ganala.santoshi@vit.ac.in
+25,50913,Dr.,Ganapathy S,M,9488869712,sganapathy@vit.ac.in
+26,50338,Dr.,Ganesan R,M,9842292350,ganesan.r@vit.ac.in
+27,50400,Dr.,Gayathri R,F,9597300373,gayathri.r@vit.ac.in
+28,50587,Dr.,Geetha S,F,9842550862,geetha.s@vit.ac.in
+29,50176,Dr.,Graceline Jasmine S,F,9003654406,graceline.jasmine@vit.ac.in
+30,50159,Dr.,Harini S,F,9444419041,harini.s@vit.ac.in
+31,50413,Dr.,Hema N,F,9444253130,hema.n@vit.ac.in
+32,50183,Prof.,Ilakiyaselvan N,M,9444633301,ilakiyaselvan.n@vit.ac.in
+33,51329,Dr.,Ilavarasi A. K ,F,9600359175,ilavarasi.ak@vit.ac.in
+34,50632,Dr.,Jagadeesh Kannan R,M,9094058841,jagadeeshkannan.r@vit.ac.in
+35,50616,Dr.,Janaki Meena M,F,9843358320,janakimeena.m@vit.ac.in
+36,51142,Dr.,Jani Anbarasi L,F,9176999843,janianbarasi.l@vit.ac.in
+37,51655,Dr.,Jayalakshmi S L,F,9840971362,jayalakshmi.sl@vit.ac.in
+38,50926,Dr.,Jayanthi R,F,8754201399,jayanthi.r@vit.ac.in
+39,50315,Dr.,Jayaram B,M,9486203960,jayaram.b@vit.ac.in
+40,50322,Prof.,Jayasudha M,F,9994979687,jayasudha.m@vit.ac.in
+41,50094,Dr.,Jeganathan L,M,9488945529,jeganathan.l@vit.ac.in
+42,50352,Dr.,Jenila Livingston L M,F,9444337733,jenila.lm@vit.ac.in
+43,51458,Dr.,Jothi R,F,8989120577,jothi.r@vit.ac.in
+44,51946,Dr.,Kalaipriyan T,M,9042208508,kalaipriyan.t@vit.ac.in
+45,50311,Dr.,Kanchana Devi V,F,9500642843,kanchanadevi@vit.ac.in
+46,50435,Dr.,Karmel A,F,9840507512,karmel.a@vit.ac.in
+47,50314,Prof.,Kavya Alluru,F,9962196549,kavya.alluru@vit.ac.in
+48,50239,Prof.,Khadar Nawas K,M,9159182399/7904258778,khadarnawas.k@vit.ac.in
+49,51343,Dr.,Kirthica S,F,9445655558,kirthica.s@vit.ac.in
+50,50304,Dr.,Kumar R,M,9444247444,kumar.rangasamy@vit.ac.in
+51,51667,Dr.,Leninisha S,F,9840546118,leninisha.shanmugam@vit.ac.in
+52,50160,Dr.,Maheswari N,F,9865918740,maheswari.n@vit.ac.in
+53,50136,Dr.,Maheswari R,F,7401596924,maheswari.r@vit.ac.in
+54,50250,Dr.,Maheswari S,F,9884355623,maheswari.s@vit.ac.in
+55,50303,Dr.,Malathi G,F,9840833337,malathi.g@vit.ac.in
+56,51457,Dr. ,Manas Ranjan Prusty,M,9444772724,manas.ranjan@vit.ac.in
+57,51656,Dr.,Menaka Pushpa A,F,9994133025,menakapushpa.a@vit.ac.in
+58,51661,Dr.,Mirza Galib Anwarul Husain Baig,M,7896517834,mirzagalib.anwarul@vit.ac.in
+59,51651,Dr.,Muthukumaran K,M,9603004658,muthukumaran.k@vit.ac.in
+60,51328,Dr.,Muthumanikandan V,M,9629574328,muthumanikandan.v@vit.ac.in
+61,50394,Dr.,Nachiyappan S,M,9443268429,nachiyappan.s@vit.ac.in
+62,50773,Dr.,Nagaraj S V,M,9003192288/9791093707,nagaraj.sv@vit.ac.in
+63,50161,Dr.,Nayeemulla Khan,M,9444470335,nayeemulla.khan@vit.ac.in
+64,50384,Dr.,Neela Narayanan V,M,7598564593,neelanarayanan.v@vit.ac.in
+65,50036,Dr.,Nisha  V.M,F,8056242631,nishavm@vit.ac.in
+66,50049,Dr.,Nithya Darisini  P.S,F,9944997687,psnithyadarshini@vit.ac.in
+67,50443,Dr.,Nithyanandam P,M,9962066206,nithyanandam.p@vit.ac.in
+68,50318,Dr.,Nivedita M,F,9952612366,nivedita.m@vit.ac.in
+69,51658,Dr.,Parkavi K,F,9940497934,parkavi.k@vit.ac.in
+70,50186,Dr.,Parvathi R,F,9443059207,parvathi.r@vit.ac.in
+71,50168,Dr.,Pattabiraman V,M,9842289896,pattabiraman.v@vit.ac.in
+72,51657,Dr.,Pavithra L K,F,9629410919,pavithra.lk@vit.ac.in
+73,50430,Prof.,Prabakaran R,M,8300126073,prabha.karan@vit.ac.in
+74,51748,Dr.,Pradeep K,M,9677100467,pradeep.k@vit.ac.in
+75,50396,Dr.,Pradeep K V,M,9445825675/9444825675,pradeep.kv@vit.ac.in
+76,50024,Dr.,Pradeep Kumar  T.S,M,9994626196,tspradeepkumar@vit.ac.in
+77,50249,Dr.,Prakash B,M,9962098396,prakash.bala@vit.ac.in
+78,51682,Dr.,Prakash P,M,9884814492,prakash.p@vit.ac.in
+79,51325,Dr.,Prasad M,M,9488828822,prasad.m@vit.ac.in
+80,50417,Dr.,Prassanna J,M,9841475035,prassanna.j@vit.ac.in
+81,50289,Dr.,Premalatha M,F,9884326554,premalatha.m@vit.ac.in
+82,50307,Dr.,Priyaadharshini M,F,9677271150,priyaadharshini.m@vit.ac.in
+83,50422,Dr.,Priyadarshini J,F,9486074882,priyadharshini.j@vit.ac.in
+84,50401,Dr.,Punitha K,F,9443916174,punitha.k@vit.ac.in
+85,50391,Dr.,Rabindra Kumar Singh,M,9884367578,rabindrakumar.singh@vit.ac.in
+86,51754,Dr.,Radha R,F,9444787294,rradha@vit.ac.in
+87,51344,Dr.,Radhika Selvamani B,F,9677144431,radhika.selvamani@vit.ac.in
+89,51947,Dr.,Rajakumar Arul,M,9600054775,rajakumar.arul@vit.ac.in
+88,50879,Dr.,Rajalakshmi R,F,9445212822,rajalakshmi.r@vit.ac.in
+90,50380,Dr.,Rajarajeswari S,F,9790896652,rajarajeswari.s@vit.ac.in
+91,50258,Dr.,Rajesh Kanna B,M,9884223178,rajeshkanna.b@vit.ac.in
+92,50370,Prof.,Rajesh Kumar,M,9092952221,rajesh.kumar@vit.ac.in
+93,50403,Dr.,Rajesh M,M,9944043544,rajesh.m@vit.ac.in
+94,50404,Prof.,Rajiv Vincent,M,9994777058,rajiv.vincent@vit.ac.in 
+95,50301,Dr.,Rajkumar S,M,9442424291,rajkumar.srinivasan@vit.ac.in
+96,50393,Dr.,Ramesh Ragala,M,9087277270,ramesh.ragala@vit.ac.in
+97,50359,Dr.,Rekha D,F,9841408327,rekha.d@vit.ac.in
+98,50577,Dr.,Renta Chintala Bhargavi,F,9940683362,bhargavi.r@vit.ac.in
+99,50916,Dr.,Renuka Devi S,F,9962591566,renukadevi.s@vit.ac.in
+100,51675,Dr.,Richa,F,8285340125,richasingh.bv@vit.ac.in
+101,51672,Dr.,Rishikeshan C. A.,M,9846952919,rishikeshan.ca@vit.ac.in
+102,50154,Dr.,Rukmani P,F,9790944341,rukmani.p@vit.ac.in
+103,50063,Dr.,Sajidha S A,F,9941385684/9360299478,vijaya.k@vit.ac.in
+104,51680,Dr.,Sakthivel V,M,9843677515,sakthivel.v@vit.ac.in
+105,50237,Dr.,Saleena B,F,9840695935,saleena.b@vit.ac.in
+106,51673,Dr.,Sandeep Kumar Satapathy,M,9861634473,sandeepkumar.s@vit.ac.in
+107,50410,Dr.,Sandhya P,F,7299480949,sandhya.p@vit.ac.in
+108,50064,Dr.,Sathis Kumar B,M,9442444010/8610984193,sathiskumar.b@vit.ac.in
+109,50185,Dr.,Sathyarajasekaran K,M,9841732250,sathyarajasekaran.k@vit.ac.in
+110,51681,Dr.,Seshu Babu Pulagara,M,9791238339,seshu.babu@vit.ac.in
+111,51659,Dr.,Shivani Gupta,F,9406580983/8770989850,shivani.gupta@vit.ac.in
+112,50432,Dr.,Shola Usha Rani,F,8870313666,sholausha.rani@vit.ac.in
+113,50266,Dr.,Shridevi S,F,9791087626,shridevi.s@vit.ac.in
+115,51962,Dr.,SHRUTI MISHRA,F,9776055687,shruti.mishra@vit.ac.in
+114,50918,Dr. ,Shyamala L,F,9884655300,shyamalal@vit.ac.in
+116,51676,Dr.,Sindhia Lingaswamy,F,9940220299,sindhia.lingaswamy@vit.ac.in
+117,50398,Dr.,Sivabalakrishnan M,M,9841260016,sivabalakrishnan.m@vit.ac.in
+118,50007,Dr.,Sivagami M,F,9841562692,msivagami@vit.ac.in
+119,50440,Prof.,Sridhar R,M,9790939134,sridhar@vit.ac.in
+120,51663,Dr.,Subbulakshmi P,F,7639664766 / 9080965819,subbulakshmi.p@vit.ac.in
+121,50569,Dr.,Subbulakshmi T,F,9994163259,subbulakshmi.t@vit.ac.in
+122,51948,Dr.,Sudha A,F,9962444339,sudha.a@vit.ac.in
+123,50438,Dr.,Suganya G,F,9894862359,suganya.g@vit.ac.in
+124,51949,Dr.,Suganeshwari G,F,7299022033,suganeshwari.g@vit.ac.in
+125,51669,Dr.,Swaminathan A,M,9677818282,swaminathan.a@vit.ac.in
+126,50767,Dr.,Sweetlin Hemalatha C,F,9791010060,sweetlin.hemalatha@vit.ac.in
+127,50392,Dr.,Syed Ibrahim S P,M,9944416392,syedibrahim.sp@vit.ac.in
+128,50177,Prof.,Thomas Abraham J V,M,9176864924,thomasabraham.jv@vit.ac.in
+129,50389,Dr.,Tulasi Prasad Sariki,M,8675724402,tulasiprasad.sariki@vit.ac.in
+130,50378,Dr.,Umamaheswari E,F,9840079813,umamaheswari.e@vit.ac.in
+131,50201,Dr.,Ummity Srinivasa Rao,M,7904714516,umitty.srinivasarao@vit.ac.in
+132,51660,Dr.,Vani V,F,9840483006,vani.v@vit.ac.in
+133,51677,Dr.,Vedhapriyavadhana R,F,9943687886,vedhapriyavadhana.r@vit.ac.in
+134,51652,Dr.,Venkatraman S,M,9042987049,venkatraman.s@vit.ac.in
+135,50138,Dr.,Vergin Raja Sarobin M,F,9710423195,verginraja.m@vit.ac.in
+136,51743,Dr.,Vijayakumar K P,M,9150200043,vijayakumar.kp@vit.ac.in
+137,50270,Dr.,Vijayalakshmi A,F,9445958156,vijayalakshmi.av@vit.ac.in
+138,50300,Dr.,Viswanathan V,M,9443174417,viswanathan.v@vit.ac.in
