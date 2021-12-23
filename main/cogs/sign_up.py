@@ -106,7 +106,6 @@ class SetupCommands(commands.Cog):
             return
 
         dm: discord.TextChannel = await ctx.author.create_dm()
-        dm = ctx.channel
         embed = discord.Embed(
             title="👋🏻 Hello from Team Kartus!",
             description="We would like to let you know data collected through Kartus will be stored safely and your privacy will not be compromised.",
@@ -590,7 +589,7 @@ class SetupCommands(commands.Cog):
                     await dm.send(
                         embed=discord.Embed(
                             title="Course list uploaded successfully!",
-                            description=str(row_data),
+                            # description=str(row_data),
                             colour=discord.Colour.from_rgb(207, 68, 119),
                         ).set_thumbnail(url=THUMBNAIL_URL)
                     )

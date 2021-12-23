@@ -81,7 +81,9 @@ temp = client.slash.context_menu
 
 def func(*args, **kwargs):
     if "guild_ids" not in kwargs:
-        kwargs["guild_ids"] = [885046938171506688, 872034501478461472]
+        data = client.cursor.execute("Select guild_id from guilds_info;")
+        data = [a[0] for a in data]
+        kwargs["guild_ids"] = data
     return temp(*args, **kwargs)
 
 
