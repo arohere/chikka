@@ -71,7 +71,7 @@ class ClientWithDb(commands.Bot):
 
 client = ClientWithDb(intents=intents)
 client.slash = SlashCommand(client, sync_commands=True)
-
+client.remove_command('help')
 #################
 #   OVERRIDES   #
 #################
@@ -82,7 +82,7 @@ temp = client.slash.context_menu
 def func(*args, **kwargs):
     if "guild_ids" not in kwargs:
         data = client.cursor.execute("Select guild_id from guilds_info;")
-        data = [a[0] for a in data]
+        data = [int(a[0]) for a in data]
         kwargs["guild_ids"] = data
     return temp(*args, **kwargs)
 
@@ -138,7 +138,7 @@ async def reloadext(ctx: commands.Context, extention: str):
 
 @client.command()
 async def ping(ctx):
-    await ctx.send("Pong! {0:.2f}ms".format(client.latency * 1000))
+    await ctx.send('Pong! {0}ms'.format(round(client.latency*1000)))
 
 
 @client.check  # global check to see if kartus is setup in the guild
