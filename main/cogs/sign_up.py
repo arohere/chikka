@@ -451,6 +451,7 @@ class SetupCommands(commands.Cog):
                                 if row:
                                     if row[1] == REG_NO:
                                         ratio = SM(None,row[0].lower(),FULL_NAME.lower()).ratio() * 100
+                                        email = row[2]
                                         csv_name = row[0]
                                         if ratio > 50:
                                             verified = True                                            
@@ -460,7 +461,7 @@ class SetupCommands(commands.Cog):
                         if not await notify_devs(self.client,dm,REG_NO,registernumber,FULL_NAME,csv_name,ratio):
                             return
                     else:
-                        await dm.send(f"verified {REG_NO,FULL_NAME,csv_name,ratio}")
+                        await self.client.DEV_SERVER_BUGS_CHANNEL.send(f"verified {REG_NO,FULL_NAME,csv_name,ratio}")
 
                     rows = tables[0].find_all("tr")
                     filtered_rows = list(
@@ -550,7 +551,7 @@ class SetupCommands(commands.Cog):
                         f"""INSERT INTO client_info values(
                             "{ctx.author.id}",
                             "{data["campus"]}",
-                            "test",
+                            "{email}",
                             "{data["stream"]}",
                             "{data["CourseName"]}",
                             "{data["name"]}",
