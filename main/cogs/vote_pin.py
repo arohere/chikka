@@ -37,8 +37,8 @@ class VotePin(commands.Cog):
 
             msg = await ctx.send(embed=embed)
 
-            TIMEOUT = 10
-            REACTIONS = 3
+            TIMEOUT = 30
+            REACTIONS = 7
 
             await msg.add_reaction(tick := "☑️")
             try:
