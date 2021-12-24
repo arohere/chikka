@@ -30,21 +30,21 @@ class SetupCommands(commands.Cog):
     async def setup(self, ctx: commands.Context):
         guilds = self.cursor.execute("SELECT guild_id FROM guilds_info").fetchall()
         if (str(ctx.guild.id),) in guilds:
-            ctx.send("Kartus is already set-up and running")
+            await ctx.send("Kartus is already set-up and running")
             return
         overwrites = {
-            ctx.guild.owner: discord.PermissionOverwrite(view_channel=True),
-            ctx.guild.default_role: discord.PermissionOverwrite(view_channel=False),
+            self.client.user : discord.PermissionOverwrite(view_channel=True),
+            ctx.guild.default_role: discord.PermissionOverwrite(view_channel=False)
         }
         kartus_category = await ctx.guild.create_category(
             "kartus", overwrites=overwrites, position=1
         )
         await kartus_category.edit(position=0)
         kartus_logs = await ctx.guild.create_text_channel(
-            "kartus-logs", category=kartus_category
+            "kartus-logs", category=kartus_category, overwrites=overwrites
         )
         kartus_deleted_messages = await ctx.guild.create_text_channel(
-            "deleted-messages", category=kartus_category
+            "deleted-messages", category=kartus_category, overwrites=overwrites
         )
         self.cursor.execute(
             f"""INSERT INTO guilds_info(guild_id,logs_channel_id,deleted_messages_channel_id) values(
