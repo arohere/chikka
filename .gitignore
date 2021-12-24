@@ -5,3 +5,4 @@ __pycache__/
 test_runs/
 *.db
 main/cogs/Resources/users(format).csv
+.env

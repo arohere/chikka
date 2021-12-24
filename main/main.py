@@ -2,6 +2,7 @@ import os
 import discord
 from discord.ext import commands
 import sqlite3
+import dotenv
 
 from discord_slash import SlashCommand
 from initdb import create_database
@@ -166,5 +167,5 @@ for a in os.listdir("./main/cogs"):  # loads all ext in cogs folder
         client.load_extension(f"cogs.{a[:-3]}")
         print("loaded " + a)
 
-
-client.run("ODg1Mzk5NzM1NTg0ODI5NDYw.YTmewg.NQTOOFMxEYMu_HE7VCHFeC_a_rw")
+key = dotenv.get_variables(".env")["TOKEN"]
+client.run(key)
