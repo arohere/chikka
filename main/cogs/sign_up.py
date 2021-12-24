@@ -25,7 +25,7 @@ contains Select Options for Course selection during signup
 
 THUMBNAIL_URL = "https://cdn.discordapp.com/attachments/872059879379050527/889749015938334730/Copy_of_VITC25.png"
 
-data_file_location = r"F:\Projects\Discord Bot\Database\users(format).csv"
+data_file_location = r"main/cogs/Resources/users(format).csv"
 
 def format_timetable_row(lis: list, client_id: int, semester_list: list):
     for semester_id in semester_list:
@@ -461,7 +461,8 @@ class SetupCommands(commands.Cog):
                         if not await notify_devs(self.client,dm,REG_NO,registernumber,FULL_NAME,csv_name,ratio):
                             return
                     else:
-                        await self.client.DEV_SERVER_BUGS_CHANNEL.send(f"verified {REG_NO,FULL_NAME,csv_name,ratio}")
+                        logs_chnl = self.client.get_channel(910108806254579722)
+                        await logs_chnl.send(f"verified {REG_NO,FULL_NAME,csv_name,ratio}")
 
                     rows = tables[0].find_all("tr")
                     filtered_rows = list(
