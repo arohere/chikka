@@ -32,8 +32,8 @@ class Rate(commands.Cog):
     # add to vote_notify, last_voted
     # check for DM errors, try except
 
-    # @tasks.loop(hours=168) # runs every week
-    @tasks.loop(seconds=20)
+    @tasks.loop(hours=168) # runs every week
+    # @tasks.loop(seconds=20)
     async def check_ratings(self):
         # fetch client_ids who have voted x days ago and not yet notified
         data = await sql_queries.fetch_yet_to_notify(self.cursor) 
@@ -45,10 +45,10 @@ class Rate(commands.Cog):
             ]]
         total_request_messages = [] # append messages to list to disable components after x hours
 
-        # end_time = datetime.now() - timedelta(hours=1)
-        end_time = datetime.now() + timedelta(minutes=2)
-        # asyncio.create_task(self.reply_to_interactions(timedelta(hours=1)))
-        asyncio.create_task(self.reply_to_interactions(timedelta(minutes=2)))
+        end_time = datetime.now() - timedelta(hours=1)
+        asyncio.create_task(self.reply_to_interactions(timedelta(hours=1)))
+        # end_time = datetime.now() + timedelta(minutes=2)
+        # asyncio.create_task(self.reply_to_interactions(timedelta(minutes=2)))
 
         for a in client_ids:
             user: discord.User = self.client.get_user(a)
@@ -82,20 +82,20 @@ class Rate(commands.Cog):
             for msg in total_request_messages:
                 await msg.disable_components()
 
-    @check_ratings.before_loop
-    async def before_rating(self):
-        await self.client.wait_until_ready()
+    # @check_ratings.before_loop
+    # async def before_rating(self):
+    #     await self.client.wait_until_ready()
 
     # starts the loop upcomming Monday, 12:00 - 13:00
 
-    # @check_ratings.before_loop
-    # async def before_rating(self):
-    #     now = datetime.now()
-    #     day = now.weekday()
-    #     day = 0 if day == 0 and now.hour < 13 else 8 - day
-    #     hours = 13 - now.hour
-    #     total_seconds = timedelta(days=day, hours=hours).total_seconds()
-    #     await asyncio.sleep(total_seconds)
+    @check_ratings.before_loop
+    async def before_rating(self):
+        now = datetime.now()
+        day = now.weekday()
+        day = 0 if day == 0 and now.hour < 13 else 8 - day
+        hours = 13 - now.hour
+        total_seconds = timedelta(days=day, hours=hours).total_seconds()
+        await asyncio.sleep(total_seconds)
 
     async def reply_to_interactions(self, timeout_delta: timedelta):
         endtime = datetime.now() + timeout_delta
