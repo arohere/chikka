@@ -5,10 +5,12 @@ import os
 import json
 import random
 from cogs.utility.timetable.footers import Group
+# from footers import Group
 from typing import List
 from cairosvg import svg2png
 from PIL import Image
 import io
+import random
 
 class TimeTable():
     def __init__(self,sql_data):
@@ -19,7 +21,6 @@ class TimeTable():
             if g.getAttribute("id") == "Time_table-2":
                 tt = g
                 break
-
         self.doc : minidom.Document = doc
         self.tt = tt
         self.course_data = json.loads(sql_data[1])
@@ -77,10 +78,10 @@ class TimeTable():
         text = text.replace(self.start_end_colour,theme_data["start_end_colour"])
         text = text.replace(self.week_colour_font,theme_data["week_colour_font"])
         text = text.replace(self.week_colour,theme_data["week_colour"])
-        text = text.replace(self.timings_colour_font,theme_data["timings_colour_font"])    
+        text = text.replace(self.timings_colour_font,theme_data["timings_colour_font"])
         text = text.replace(self.timings_colour,theme_data["timings_colour"])
-        text = text.replace(self.semitransparent_bg,theme_data["semitransparent_bg"])      
-        text = text.replace(self.sem_name_user_name,theme_data["sem_name_user_name"])      
+        text = text.replace(self.semitransparent_bg,theme_data["semitransparent_bg"])
+        text = text.replace(self.sem_name_user_name,theme_data["sem_name_user_name"])
         text = text.replace(self.rectange_stroke,theme_data["rectange_stroke"])
         script.removeChild(script.childNodes[0])
         script.appendChild(self.doc.createTextNode(text))
@@ -123,21 +124,34 @@ class TimeTable():
             cell.set_font_colour()
 
     def _return_svg(self):
-        return [self.footers_doc.toxml(), self.doc.toxml()]
+        data = self.footers_doc.toxml().replace("cls-","class-")
+        footers_doc_changed = minidom.parseString(data)
+        footers_doc_changed.childNodes[0].setAttribute("x","67")
+        footers_doc_changed.childNodes[0].setAttribute("y","1435")
+        footers_doc_changed.childNodes[0].removeAttribute("viewBox")
+        self.doc.childNodes[0].appendChild(footers_doc_changed.childNodes[0])
+        return self.doc.toprettyxml(encoding="UTF-8")
 
     def export_png(self):
         out = self._return_svg()
-        footers = svg2png(bytestring=out[0])
-        table = svg2png(bytestring=out[1])
-        footer_foreground = Image.open(io.BytesIO(footers))
-        table_background = Image.open(io.BytesIO(table))
-        table_background , footer_foreground = table_background.convert("RGBA") , footer_foreground.convert("RGBA")
-        x, y = (67,1435)
-        table_background.paste(footer_foreground,(x,y),footer_foreground)
-        img_byte_arr = io.BytesIO()
-        table_background.save(img_byte_arr, format="png")
-        img_byte_arr.seek(0)
-        return img_byte_arr
+        file_name = f"temp/temp-{random.randrange(3000,90000)}.svg"
+        f = open(file_name,"wb")
+        f.write(out)
+        f.close()
+        out_file = f"temp/{random.randrange(3000,90000)}.png"
+        os.system(f'chromium-browser -headless --disable-gpu --default-background-color=0  --window-size=3840,2160 --screenshot="{out_file}" "{file_name}"')
+        return open(out_file,"rb")
+        # footers = svg2png(bytestring=out[0])
+        # table = svg2png(bytestring=out[1])
+        # footer_foreground = Image.open(io.BytesIO(footers))
+        # table_background = Image.open(io.BytesIO(table))
+        # table_background , footer_foreground = table_background.convert("RGBA") , footer_foreground.convert("RGBA")
+        # x, y = (67,1435)
+        # table_background.paste(footer_foreground,(x,y),footer_foreground)
+        # img_byte_arr = io.BytesIO()
+        # table_background.save(img_byte_arr, format="png")
+        # img_byte_arr.seek(0)
+        # return img_byte_arr
 
 
 

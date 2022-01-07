@@ -7,3 +7,4 @@ test_runs/
 main/cogs/Resources/users(format).csv
 .env
 log.txt
+temp/*
