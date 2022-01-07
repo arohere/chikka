@@ -16,7 +16,7 @@ else:
 
 class TimeTable():
     def __init__(self,sql_data):
-        x_done = r".\assets\Time Table Template\Time Table.svg"
+        x_done = r"./assets/Time Table Template/Time Table.svg"
         doc = minidom.parse(open(x_done))
         tt = doc.getElementsByTagName("g")
         for g in tt :
@@ -69,7 +69,7 @@ class TimeTable():
         user_name.appendChild(self.doc.createTextNode(self.user_name))
         timetable_name.appendChild(self.doc.createTextNode(self.sem_name))
 
-    def set_theme(self,location=r"assets\Themes\theme - 1.json",file=None):
+    def set_theme(self,location=r"assets/Themes/theme - 1.json",file=None):
         theme_data = json.load(open(location))
         colours = list(theme_data["colours"].values())
         random.shuffle(colours)
