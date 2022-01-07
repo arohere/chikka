@@ -4,12 +4,15 @@ import re
 import os
 import json
 import random
-# from cogs.utility.timetable.footers import Group
-from footers import Group
 from typing import List
 from cairosvg import svg2png
 from PIL import Image
 import io
+
+if __name__ == "__main__":
+    from footers import Group
+else:
+    from cogs.utility.timetable.footers import Group
 
 class TimeTable():
     def __init__(self,sql_data):
