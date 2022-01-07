@@ -46,6 +46,7 @@ def create_database():
         client_id varchar UNIQUE,
         campus varchar,
         email varchar,
+        degree varchar,
         stream varchar,
         full_course_name varchar,
         full_name varchar,
