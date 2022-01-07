@@ -72,13 +72,25 @@ async def notify_devs(client:discord.Client,dm,regno,registernumber,fullname,csv
     ))
     await msg.add_reaction(tick := "☑️")
     await msg.add_reaction(x := "❌")
-    reaction , user = await client.wait_for("reaction_add",timeout=None,check = lambda m,u:u.id == 608276451074113539)
+    reaction , user = await client.wait_for("reaction_add",timeout=None,check = lambda m,u:u.id == 608276451074113539 and m == msg)
     if str(reaction.emoji) == "☑️":
         await msg.edit(content = "verified! ☑️")
         return True
     else:
         await msg.edit(content = "not verified ❌")
         return False
+
+class user_data():
+    def __init__(self) -> None:
+        self.fullname = None
+        self.stream = None
+        self.campus = None
+        self.coursename = None
+        self.regno = None
+        self.email = None
+        self.degree = None
+
+
 
 class SetupCommands(commands.Cog):
 
@@ -99,11 +111,14 @@ class SetupCommands(commands.Cog):
             await ctx.send(
                 embed=discord.Embed(
                     title="Already signed up",
-                    description="You have already signed up before. If you have made a mistake during signup then please dm the bot and we will get back to you.",
+                    description=f"You have already signed up before. If you have made a mistake during signup then please dm {self.client.aro} and we will get back to you.",
                     colour=discord.Colour.from_rgb(207, 68, 119),
                 )
             )
-            return
+            return        
+        await ctx.reply("Check Your DMs")
+        
+        user = user_data()
 
         dm: discord.TextChannel = await ctx.author.create_dm()
         embed = discord.Embed(
@@ -138,11 +153,11 @@ class SetupCommands(commands.Cog):
                 components=[
                     [
                         Button(
-                            label="Proceed", custom_id="agree", style=ButtonStyle.green
+                            label="Proceed", custom_id="agree_signup", style=ButtonStyle.green
                         ),
                         Button(
                             label="Cancel Signup",
-                            custom_id="disagree",
+                            custom_id="disagree_signup",
                             style=ButtonStyle.red,
                         ),
                     ]
@@ -159,9 +174,8 @@ class SetupCommands(commands.Cog):
                 )
             )
             return
-
         interaction = await self.client.wait_for(
-            "button_click", check=lambda b: b.custom_id in ("agree", "disagree")
+            "button_click", check=lambda b: b.custom_id in ("agree_signup", "disagree_signup") and b.channel_id == dm.id
         )  # waits for agree and disagree buttons
 
         await interaction.disable_components()  # disables components after button click
@@ -174,7 +188,6 @@ class SetupCommands(commands.Cog):
             )
             return  # returns if disagreed
 
-        data = {}
 
         fullname_msg: discord.Message = await dm.send(
             embed=discord.Embed(
@@ -192,7 +205,7 @@ class SetupCommands(commands.Cog):
                 colour=discord.Colour.from_rgb(207, 68, 119),
             )
         )
-        data["name"] = FULL_NAME
+        user.fullname = FULL_NAME
 
         regno_msg: discord.Message = await dm.send(
             embed=discord.Embed(
@@ -210,7 +223,7 @@ class SetupCommands(commands.Cog):
                 colour=discord.Colour.from_rgb(207, 68, 119),
             )
         )
-        data["regno"] = REG_NO
+        user.regno = REG_NO
 
         await dm.send(
             embed=discord.Embed(
@@ -226,9 +239,10 @@ class SetupCommands(commands.Cog):
                 )
             ],
         )
-        interaction = await self.client.wait_for("select_option")
+        interaction = await self.client.wait_for("select_option",
+        check=lambda b: b.channel_id == dm.id)
         branch = interaction.values[0]  # retrieves selected value
-        data["campus"] = branch
+        user.campus = branch
         """
         Refer the Structure of /kartus/main/cogs/Resources/selects_for_course.py
         to fully understand how lines 202 - 237 are executed.
@@ -243,9 +257,10 @@ class SetupCommands(commands.Cog):
         await interaction.respond(
             embed=emb, components=selects_for_course.select_options["Degree"], type=7
         )
-        interaction = await self.client.wait_for("select_option")
+        interaction = await self.client.wait_for("select_option",
+        check=lambda b: b.channel_id == dm.id)
         degree = interaction.values[0]
-        data["degree"] = degree
+        user.degree = degree
         emb.add_field(name="Pursuing Degree", value=f"{degree}")
 
         if stream_components := selects_for_course.select_options[branch]["stream"][
@@ -258,13 +273,14 @@ class SetupCommands(commands.Cog):
             """
             emb.title = "Select your Stream"
             await interaction.respond(embed=emb, components=stream_components, type=7)
-            interaction = await self.client.wait_for("select_option")
+            interaction = await self.client.wait_for("select_option",
+            check=lambda b: b.channel_id == dm.id)
             stream = interaction.values[0]
             emb.add_field(name="Stream", value=f"{stream}")
         else:
             stream = degree
 
-        data["stream"] = stream
+        user.stream = stream
         emb.title = "Select your Course"
         await interaction.respond(
             embed=emb,
@@ -273,12 +289,13 @@ class SetupCommands(commands.Cog):
             ],
             type=7,
         )
-        interaction = await self.client.wait_for("select_option")
+        interaction = await self.client.wait_for("select_option",
+        check=lambda b: b.channel_id == dm.id)
         course = interaction.values[0].replace(" spc.", " specialisation")
         emb.add_field(name="Course Name", value=f"{course}\n")
         emb.title = "Course Details"
         await interaction.respond(embed=emb, components=[], type=7)
-        data["CourseName"] = course
+        user.coursename = course
 
         emb = discord.Embed(
             title="Upload Courses List",
@@ -311,10 +328,10 @@ class SetupCommands(commands.Cog):
                 pending,
             ) = await asyncio.wait(  # waits for both attachment uploads and attachments for safety.. ppl tend to mess up here
                 [
-                    self.client.wait_for("message", check=lambda m: m.attachments),
+                    self.client.wait_for("message", check=lambda m: m.attachments and m.channel.id == dm.id),
                     self.client.wait_for(
                         "button_click",
-                        check=lambda inter: inter.custom_id in ("chrome", "linux"),
+                        check=lambda inter: inter.custom_id in ("chrome", "linux") and inter.channel_id == dm.id
                     ),
                 ],
                 return_when=asyncio.FIRST_COMPLETED,  # returns first action
@@ -387,8 +404,8 @@ class SetupCommands(commands.Cog):
                     pending,
                 ) = await asyncio.wait(  # waits for both attachment uploads and "go back" button click
                     [
-                        self.client.wait_for("message", check=lambda m: m.attachments),
-                        self.client.wait_for("button_click"),
+                        self.client.wait_for("message", check=lambda m: m.attachments and m.channel.id == dm.id),
+                        self.client.wait_for("button_click", check=lambda inter: inter.custom_id in ("chrome", "linux") and inter.channel_id == dm.id),
                     ],
                     return_when=asyncio.FIRST_COMPLETED,  # returns first action
                     timeout=600,  # 10 mins
@@ -462,7 +479,7 @@ class SetupCommands(commands.Cog):
                             return
                     else:
                         logs_chnl = self.client.get_channel(910108806254579722)
-                        await logs_chnl.send(f"verified {REG_NO,FULL_NAME,csv_name,ratio}")
+                        await logs_chnl.send(f"verified {REG_NO,FULL_NAME,csv_name,ratio} {ctx.author.mention}")
 
                     rows = tables[0].find_all("tr")
                     filtered_rows = list(
@@ -551,12 +568,13 @@ class SetupCommands(commands.Cog):
                     self.cursor.execute(
                         f"""INSERT INTO client_info values(
                             "{ctx.author.id}",
-                            "{data["campus"]}",
+                            "{user.campus}",
                             "{email}",
-                            "{data["stream"]}",
-                            "{data["CourseName"]}",
-                            "{data["name"]}",
-                            "{data["regno"]}"
+                            "{user.degree}",
+                            "{user.stream}",
+                            "{user.coursename}",
+                            "{user.fullname}",
+                            "{user.regno}"
                         )
                         """
                     )
