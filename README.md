@@ -3,7 +3,7 @@
 ### Requirements:
 
 - Python
--MySql
+- MySql
 
 ### Structure
 
@@ -18,10 +18,10 @@
 
 
 - <b>!signup</b> - signup with kartus and you will be able to do the following
-        ⭐ Find Peers with similar Courses
-        ⭐ Conduct a short survey to rate faculties
-        ⭐ To View or Add Faculties to Blacklist/Whitelist
-        ⭐ Notify before a class starts (optional)
+<br>⭐ Find Peers with similar Courses
+<br>⭐ Conduct a short survey to rate faculties
+<br>⭐ To View or Add Faculties to Blacklist/Whitelist
+<br>⭐ Notify before a class starts (optional) <br>
 ![Welcome Screen](https://imgur.com/pSkS3J8.png)
 ![Details](https://imgur.com/Q0H6xRX.png)
 ![Schedule Upload](https://imgur.com/nKZ9PS6.png)
